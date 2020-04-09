@@ -13,6 +13,10 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+
+const API_URL = 'http://localhost:5000'
 
 function Copyright() {
   return (
@@ -112,10 +116,28 @@ const goods = [
   }
 ]
 
-
 export default function ListGoods() {
   const classes = useStyles();
-    return (
+  const [products, setProducts] = useState([]);
+
+  function loadContents() {
+    console.log('loadContents');
+    const url = `${API_URL}/products`;
+    axios.get(url).then(response => response.data)
+      .then((data) => {
+        setProducts(data);
+        let list = data.map(function (product) {
+          console.log(product);
+          return 1;
+        });
+      });
+  }
+
+  useEffect(() => {
+    loadContents();
+  }, []);
+
+  return (
     <React.Fragment>
       <CssBaseline />
       <AppBar position="relative">
@@ -126,13 +148,13 @@ export default function ListGoods() {
           </Typography>
         </Toolbar>
       </AppBar>
-      
+
       <main>
         {/* Hero unit */}
         <div className={classes.heroContent}>
           <Container maxWidth="sm">
             <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-            OE & FA
+              OE & FA
             </Typography>
             <Typography variant="h5" align="center" color="textSecondary" paragraph>
               여기서 주거니 받거니
@@ -153,16 +175,16 @@ export default function ListGoods() {
             </div>
           </Container>
         </div>
-        
+
         <Container className={classes.cardGrid} maxWidth="md">
           <Grid container spacing={4}>
-            {/* {cards.map((card) => ( */}
-            {goods.map((card) => (
-              <Grid item key={card.id} xs={12} sm={6} md={4}>
+            {console.log(products)}
+            {products.map((card) => (
+              <Grid item key={card._id} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
                   <CardMedia
                     className={classes.cardMedia}
-                    image={card.image}
+                    image={API_URL + '/imageFiles/' + card.image}
                     title={card.title}
                   />
                   <CardContent className={classes.cardContent}>
@@ -170,7 +192,7 @@ export default function ListGoods() {
                       {card.title}
                     </Typography>
                     <Typography>
-                      {card.price}원 {card.desc}
+                      {card.price}원 {card.description}
                     </Typography>
                   </CardContent>
                   <CardActions>
@@ -183,7 +205,7 @@ export default function ListGoods() {
                   </CardActions>
                 </Card>
               </Grid>
-            ))} 
+            ))}
           </Grid>
         </Container>
       </main>
@@ -202,4 +224,3 @@ export default function ListGoods() {
     </React.Fragment>
   );
 }
-  
