@@ -60,3 +60,7 @@
 ./frontend/yarn-error.log*
 
 package-lock.json
+
+.DS_Store
+
+backend-nodejs/node_modules/
