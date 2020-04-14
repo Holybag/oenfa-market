@@ -1,31 +1,40 @@
-import React from 'react';
-//import logo from './logo.svg';
-import './App.css';
-import RegGoods from './RegGoods';
-import ListGoods from './listGoods';
+import React, { Component } from 'react';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      {/* <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header> */}
-      <ListGoods/>
-      
-      {/* <RegGoods /> */}
-    </div>
-  );
+import Home from './pages/Home';
+import About from './pages/About';
+import RegisterGoods from './pages/RegisterGoods';
+import ListGoods from './pages/ListGoods';
+
+import Button from '@material-ui/core/Button';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+
+class App extends Component {
+  render() {
+    return (
+      <BrowserRouter>
+        <AppBar position="relative">
+          <Toolbar>            
+            <Typography variant="h6" color="inherit" noWrap>
+            <Link style={{ textDecoration: 'none' }} to='/'>
+              OE & FA Market
+            </Link>
+            </Typography>            
+            <Link style={{ textDecoration: 'none' }} to='/registergoods'>
+              <Button variant="outlined" color="primary">상품 등록</Button>
+            </Link>
+          </Toolbar>
+        </AppBar>
+        
+        <Route exact path='/' component={ListGoods} />
+        <Route path='/about' component={About} />
+        <Route path='/listgoods' component={ListGoods} />
+        <Route path='/registergoods' component={RegisterGoods} />        
+      </BrowserRouter>
+    );
+  }
 }
 
 export default App;
