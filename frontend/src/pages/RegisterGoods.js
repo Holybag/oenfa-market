@@ -1,4 +1,6 @@
 import React from 'react';
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,10 +14,15 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import { Link as RLink } from 'react-router-dom';
 
 
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
+import axios from 'axios';
+import { Redirect } from 'react-router-dom';
+
+const API_URL = 'http://localhost:5000'
 
 function Copyright() {
   return (
@@ -62,6 +69,29 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RegGoods() {
   const classes = useStyles();
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageFile, setImageFile] = useState('');
+
+  let history = useHistory();
+
+  const handleSummit = (event) => {
+    console.log('title:',title);
+    console.log('category:',category);
+    console.log('price:',price);
+    console.log('description:',description);
+    event.preventDefault();
+    const formData = new FormData();
+    formData.append('imgFile', imageFile);
+    const url = `${API_URL}/products`;
+    axios.post(url, formData, {})
+      .then(res => {
+        console.log(JSON.stringify(res));
+        history.push('/');
+      })
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -77,7 +107,13 @@ export default function RegGoods() {
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
-              <input accept="image/*" className={classes.input} id="icon-button-file" type="file" />
+              <input 
+                name="imgFile" 
+                type="file"
+                onChange={(event) => setImageFile(event.target.files[0])}
+                accept="image/*" 
+                className={classes.input} 
+                id="icon-button-file" />
               <label htmlFor="icon-button-file">
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
@@ -89,13 +125,15 @@ export default function RegGoods() {
             <Grid item xs={12}>
               <TextField
                 autoComplete="fname"
-                name="firstName"
+                name="title"
                 variant="outlined"
                 required
                 fullWidth
-                id="firstName"
+                id="title"
                 label="제목"
                 autoFocus
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -103,10 +141,12 @@ export default function RegGoods() {
                 variant="outlined"
                 required
                 fullWidth
-                id="lastName"
+                id="category"
                 label="카테고리"
-                name="lastName"
+                name="category"
                 autoComplete="lname"
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -114,10 +154,12 @@ export default function RegGoods() {
                 variant="outlined"
                 required
                 fullWidth
-                id="address1"
+                id="price"
                 label="금액"
-                name="address1"
+                name="price"
                 autoComplete="address1"
+                value={price}
+                onChange={(event) => setPrice(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -125,12 +167,14 @@ export default function RegGoods() {
                 variant="outlined"
                 required
                 fullWidth
-                id="address1"
+                id="description"
                 label="상세설명"
                 multiline
                 rows="8"
-                name="address1"
+                name="description"
                 autoComplete="address1"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
               />
             </Grid>
           </Grid>
@@ -141,6 +185,7 @@ export default function RegGoods() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={handleSummit}
           >
             상품 등록
           </Button>
