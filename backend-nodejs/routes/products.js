@@ -3,6 +3,7 @@ const multer = require('multer');
 var mongo = require('mongodb');
 var bodyParser = require('body-parser');
 
+
 var router = express.Router();
 let storage = multer.diskStorage({    
     destination: function(req, file, callback){
@@ -36,7 +37,6 @@ mongo.MongoClient.connect(url, function(err, client) {
 });
 
 /* GET products listing. */
-
 router.get('/', function (req, res, next) {
     const productsCollection = db.collection('products');
     productsCollection.find({}).toArray(function (error, results) {
@@ -47,6 +47,23 @@ router.get('/', function (req, res, next) {
         }
     });
 });
+
+/* GET product detail Info. */
+router.get('/:objId', function (req, res, next) {
+    var objId = req.params.objId;
+    var o_id = new mongo.ObjectId(objId);
+    //console.log(req.params);  
+    const productsCollection = db.collection('products');
+    productsCollection.find({"_id":o_id}).toArray(function (error, results) {
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(results);
+        }
+    });
+});
+
+ 
 
 router.post('/', upload, function(req, res, next){
     //let uploadFileName;

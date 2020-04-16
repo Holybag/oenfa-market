@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
-
-import Home from './pages/Home';
+//import Home from './pages/Home';
 import About from './pages/About';
 import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
+import ViewGoods from './pages/ViewGoods';
 
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
@@ -32,6 +32,7 @@ class App extends Component {
         <Route path='/about' component={About} />
         <Route path='/listgoods' component={ListGoods} />
         <Route path='/registergoods' component={RegisterGoods} />        
+        <Route path='/viewgoods' component={ViewGoods} />        
       </BrowserRouter>
     );
   }

@@ -12,7 +12,8 @@ import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
-import { BrowserRouter ,Link as RLink } from 'react-router-dom';
+import { Link as RLink } from 'react-router-dom';
+//import { BrowserRouter ,Link as RLink } from 'react-router-dom';
 
 const API_URL = 'http://localhost:5000'
 
@@ -121,17 +122,20 @@ export default function ListGoods() {
             {products.map((card) => (
               <Grid item key={card._id} xs={12} sm={6} md={4}>
                 <Card className={classes.card}>
-                  <CardMedia
-                    className={classes.cardMedia}
-                    image={API_URL + '/imageFiles/' + card.image}
-                    title={card.title}
-                  />
+                  <RLink to={'/viewgoods/' + card._id}>  
+                    <CardMedia
+                      className={classes.cardMedia}
+                      image={API_URL + '/imageFiles/' + card.image}
+                      title={card.title}
+                    />
+                  </RLink>
                   <CardContent className={classes.cardContent}>
                     <Typography gutterBottom variant="h5" component="h2">
                       {card.title}
                     </Typography>
                     <Typography>
                       {card.price}원 {card.description}
+                      {card._id}
                     </Typography>
                   </CardContent>
                   <CardActions>
