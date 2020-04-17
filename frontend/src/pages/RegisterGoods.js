@@ -85,6 +85,10 @@ export default function RegGoods() {
     event.preventDefault();
     const formData = new FormData();
     formData.append('imgFile', imageFile);
+    formData.append('title', title);
+    formData.append('userId', 1);
+    formData.append('price', price);
+    formData.append('description', description);
     const url = `${API_URL}/products`;
     axios.post(url, formData, {})
       .then(res => {
