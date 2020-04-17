@@ -85,10 +85,10 @@ router.post('/', upload, function(req, res, next){
     let description = req.body.description;
     let createdAt = new Date();
     let newFile = req.file.filename;
-    console.log(newFile);
+    console.log('title:' + title + ' userId:' + userId + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
 
     const productsCollection = db.collection('products');
-    productsCollection.save({
+    productsCollection.insertOne({
         title: title,
         userId: parseInt(userId),
         price: parseInt(price),
