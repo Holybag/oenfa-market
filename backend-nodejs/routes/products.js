@@ -81,16 +81,18 @@ router.post('/', upload, function(req, res, next){
     
     let title = req.body.title;
     let userId = req.body.userId;
+    let category = req.body.category;
     let price = req.body.price;
     let description = req.body.description;
     let createdAt = new Date();
     let newFile = req.file.filename;
-    console.log('title:' + title + ' userId:' + userId + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
+    console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
 
     const productsCollection = db.collection('products');
     productsCollection.insertOne({
         title: title,
         userId: parseInt(userId),
+        category: parseInt(category),
         price: parseInt(price),
         description: description,
         image: newFile,
@@ -102,6 +104,7 @@ router.post('/', upload, function(req, res, next){
             let result = {
                 title: title,
                 userId: userId,
+                category: category,
                 price: price,
                 description: description,
                 image: newFile,
