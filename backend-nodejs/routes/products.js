@@ -36,6 +36,7 @@ mongo.MongoClient.connect(url, function(err, client) {
     }
 });
 
+
 /* GET products listing. */
 router.get('/', function (req, res, next) {
     const productsCollection = db.collection('products');
@@ -115,6 +116,79 @@ router.post('/', upload, function(req, res, next){
         }
     });
     
+});
+
+router.delete('/', function(req, res, next){
+    const productsCollection = db.collection('products');
+    productsCollection.deleteMany({}, function(error, result){
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+/* delete result ok json msg
+{
+    "result": {
+        "n": 10,
+        "ok": 1
+    },
+    "connection": {
+        "id": 3,
+        "host": "localhost",
+        "port": 27017
+    },
+    "deletedCount": 10,
+    "n": 10,
+    "ok": 1
+}
+*/
+
+router.delete('/:id', function(req, res, next){
+    let id = req.params.id;
+    console.log('id:', id);
+
+    const productsCollection = db.collection('products');
+    productsCollection.deleteOne({
+        _id: new mongo.ObjectID(id)
+    }, function(error, result){
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(result);
+        }
+    });
+});
+
+router.put('/:id', function(req, res, next){
+    let id = req.params.id;
+    let title = req.body.title;
+    let category = req.body.category;
+    let price = req.body.price;
+    let description = req.body.description;
+
+    console.log("id:" + id + ' title:' + title + ' category:' + category + ' price:' + price + ' description:' + description);
+
+    const productsCollection = db.collection('products');
+    productsCollection.updateOne({
+        _id: new mongo.ObjectID(id)
+    }, {
+        $set: { 
+            title: title, 
+            category: parseInt(category),
+            price: parseInt(price),
+            description: description
+        }
+    }, 
+    function(error, result){
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(result);
+        }
+    });
 });
 
 module.exports = router;
