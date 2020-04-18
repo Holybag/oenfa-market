@@ -55,7 +55,7 @@ router.get('/:objId', function (req, res, next) {
     var o_id = new mongo.ObjectId(objId);
     //console.log(req.params);  
     const productsCollection = db.collection('products');
-    productsCollection.find({"_id":o_id}).toArray(function (error, results) {
+    productsCollection.findOne({"_id":o_id}, function (error, results) {
         if (error) {
             res.send(error);
         } else {
