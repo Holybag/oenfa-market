@@ -88,6 +88,7 @@ export default function RegGoods() {
     formData.append('imgFile', imageFile);
     formData.append('title', title);
     formData.append('userId', 1);
+    formData.append('category', category);
     formData.append('price', price);
     formData.append('description', description);
     const url = `${API_URL}/products`;
