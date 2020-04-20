@@ -14,15 +14,16 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import { Link as RLink } from 'react-router-dom';
-
+//import { Link as RLink } from 'react-router-dom';
 
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+//import { Redirect } from 'react-router-dom';
+
 
 const API_URL = 'http://localhost:5000'
+
 
 function Copyright() {
   return (
