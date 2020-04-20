@@ -65,20 +65,19 @@ router.get('/:objId', function (req, res, next) {
 });
 
 /* GET product list in Category. */
-router.get('/category/:firstKinds', function (req, res, next) {
-    var firstKinds = req.params.firstKinds;
-    //var o_id = new mongo.ObjectId(objId);
-    console.log(req.params);  
+router.get('/category/:strCategory', function (req, res, next) {
+    var categoryCode = Number(req.params.strCategory);
+    //console.log(req.params);  
     const productsCollection = db.collection('products');
-    productsCollection.find({"firstKinds":firstKinds}).toArray(function (error, results) {
-        if (error) {
+    productsCollection.find({"category":categoryCode}).toArray(function (error, results) {
+            if (error) {
             res.send(error);
         } else {
             res.send(results);
         }
     });
 });
- 
+
 
 router.post('/', upload, function(req, res, next){
     //let uploadFileName;
