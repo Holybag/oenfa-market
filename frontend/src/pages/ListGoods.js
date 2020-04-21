@@ -152,7 +152,8 @@ export default function ListGoods() {
                     loadContents(text.code);
                   }}>
                   <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text.name} />
+                  {/* <ListItemText primary={text.name} /> */}
+                  <ListItemText primary={text.name + " [" + text.code + "]"} />
                 </ListItem>
               ))}
             </List>

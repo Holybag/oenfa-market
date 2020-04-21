@@ -22,9 +22,9 @@ mongo.MongoClient.connect(url, function(err, client) {
 
 /* GET category listing. */
 router.get('/', function (req, res, next) {
-    const productsCollection = db.collection('category');
+    const categoryCollection = db.collection('category');
     // Sorting
-    productsCollection.find({}).sort({"sortNo":1}).toArray(function (error, results) {
+    categoryCollection.find({}).sort({"sortNo":1}).toArray(function (error, results) {
         if (error) {
             res.send(error);
         } else {
@@ -33,6 +33,19 @@ router.get('/', function (req, res, next) {
     });
 });
 
+/* GET category code to name. */
+router.get('/:code', function (req, res, next) {
+    var code = Number(req.params.code);
+    //console.log(req.params);  
+    const categoryCollection = db.collection('category');
+    categoryCollection.findOne({"code":code}, function (error, results) {
+        if (error) {
+            res.send(error);
+        } else {
+            res.send(results);
+        }
+    });
+});
 
 /* Insert category data */
 router.post('/', function (req, res, next) {
