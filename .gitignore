@@ -66,3 +66,5 @@ package-lock.json
 backend-nodejs/node_modules/
 
 frontend/node_modules/
+
+backend-nodejs/uploadfiles/
