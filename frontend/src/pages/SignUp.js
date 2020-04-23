@@ -1,4 +1,6 @@
 import React from 'react';
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +14,10 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
+import axios from 'axios';
+import qs from 'qs';
+
+const API_URL = 'http://localhost:5000'
 
 function Copyright() {
   return (
@@ -49,6 +55,42 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  
+  let history = useHistory();
+
+  const handleSummit = (event) => {
+      console.log('email:',email);
+      console.log('password:',password);
+      console.log('name:',name);
+      console.log('description:',description);
+      event.preventDefault();
+
+      const url = `${API_URL}/users`;
+      axios({
+        method: 'post',
+        url: url,
+        data: qs.stringify({
+          email: email,
+          password: password,
+          name: name,
+          description: description
+        }),
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        }
+      })
+        .then(res => {
+          console.log(JSON.stringify(res));
+          history.push('/');
+        })
+
+    }
+  
+  
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -61,29 +103,7 @@ export default function SignUp() {
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                autoComplete="fname"
-                name="firstName"
-                variant="outlined"
-                required
-                fullWidth
-                id="firstName"
-                label="First Name"
-                autoFocus
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="lastName"
-                label="Last Name"
-                name="lastName"
-                autoComplete="lname"
-              />
-            </Grid>
+           
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
@@ -93,6 +113,8 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
@@ -105,14 +127,42 @@ export default function SignUp() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
               />
             </Grid>
             <Grid item xs={12}>
+            <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="Name"
+                label="Name"
+                name="Name"
+                autoComplete="lname"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                id="description"
+                name="description"
+                label="description"
+                type="description"
+                value={description}
+                onChange={(event) => setDescription(event.target.value)}
+              />
+            </Grid>
+            {/* <Grid item xs={12}>
               <FormControlLabel
                 control={<Checkbox value="allowExtraEmails" color="primary" />}
                 label="I want to receive inspiration, marketing promotions and updates via email."
               />
-            </Grid>
+            </Grid> */}
           </Grid>
           <Button
             type="submit"
@@ -120,6 +170,7 @@ export default function SignUp() {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={handleSummit}
           >
             Sign Up
           </Button>
