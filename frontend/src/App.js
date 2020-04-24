@@ -5,6 +5,7 @@ import About from './pages/About';
 import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
 import ViewGoods from './pages/ViewGoods';
+import Login from './pages/Login';
 
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
@@ -32,7 +33,8 @@ class App extends Component {
         <Route path='/about' component={About} />
         <Route path='/listgoods' component={ListGoods} />
         <Route path='/registergoods' component={RegisterGoods} />        
-        <Route path='/viewgoods' component={ViewGoods} />        
+        <Route path='/viewgoods' component={ViewGoods} />
+        <Route path='/login' component={Login} />
       </BrowserRouter>
     );
   }
