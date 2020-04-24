@@ -4,3 +4,4 @@ export { default as ListGoods } from './ListGoods';
 export { default as RegisterGoods } from './RegisterGoods';
 export { default as ViewGoods } from './ViewGoods';
 export { default as Login } from './Login';
+export { default as SignUp } from './SignUp';
