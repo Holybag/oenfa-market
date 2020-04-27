@@ -54,7 +54,7 @@ router.post('/', function(req, res, next){
             let payLoad = { 'userId': email };
             let token = jwt.sign(payLoad, tokenKey, {
                 algorithm: 'HS256',
-                expiresIn: 10
+                expiresIn: 600
             });
             console.log('token:', token);
             
