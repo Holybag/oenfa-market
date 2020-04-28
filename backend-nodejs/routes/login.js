@@ -33,6 +33,35 @@ router.get('/', function(req, res, next){
     });
 });
 
+/* Login Check REST API */
+router.post('/loginCheck', function(req, res, next){
+    var email = req.body.email;
+    var token = req.body.token;
+
+    jwt.verify(token, tokenKey, function(error, decoded) {
+        if(error){
+            var data = {
+                    "success": false,
+                    "message": error.name,
+                    "errors": error.message,
+                    "data": error.expiredAt
+                };   
+            //console.log(data);            
+            res.send(data);
+        }else{
+            var data = {
+                "success": true,
+                "message": null,
+                "errors": null,
+                "data": decoded
+            };
+            //console.log(data);
+            res.send(data);
+        }
+    });
+});
+
+
 router.post('/', function(req, res, next){
     var email = req.body.email;
     var password = req.body.password;
@@ -54,7 +83,7 @@ router.post('/', function(req, res, next){
             let payLoad = { 'userId': email };
             let token = jwt.sign(payLoad, tokenKey, {
                 algorithm: 'HS256',
-                expiresIn: 10
+                expiresIn: '1m'
             });
             console.log('token:', token);
             
