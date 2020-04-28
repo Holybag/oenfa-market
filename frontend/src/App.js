@@ -6,7 +6,7 @@ import { useState } from 'react';
 import About from './pages/About';
 import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
-//import ViewGoods from './pages/ViewGoods';
+import ViewGoods from './pages/ViewGoods';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 
@@ -71,6 +71,7 @@ class App extends Component {
         <Route path='/registergoods' component={RegisterGoods} />        
         <Route path='/login' component={Login} />
         <Route path='/signup' component={SignUp} />        
+        <Route path='/viewgoods' component={ViewGoods} />        
       </BrowserRouter>
     );
   }
