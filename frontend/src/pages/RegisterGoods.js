@@ -92,7 +92,15 @@ export default function RegGoods() {
     formData.append('price', price);
     formData.append('description', description);
     const url = `${API_URL}/products`;
-    axios.post(url, formData, {})
+    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+    console.log('token from localstorage:', token);
+    axios.post(url, formData, {
+      headers: {
+        'authorization': token,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
       .then(res => {
         console.log(JSON.stringify(res));
         history.push('/');

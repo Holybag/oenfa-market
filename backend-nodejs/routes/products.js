@@ -2,6 +2,7 @@ var express = require('express');
 const multer = require('multer');
 var mongo = require('mongodb');
 var bodyParser = require('body-parser');
+const checkAuth = require('../middleware/check-auth');
 
 
 var router = express.Router();
@@ -79,7 +80,7 @@ router.get('/category/:strCategory', function (req, res, next) {
 });
 
 
-router.post('/', upload, function(req, res, next){
+router.post('/', checkAuth, upload, function(req, res, next){
     //let uploadFileName;
     // (req, res, function(err){
     //     if (err){
