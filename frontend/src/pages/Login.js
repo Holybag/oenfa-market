@@ -11,28 +11,14 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+//import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-
 const API_URL = 'http://localhost:5000';
 
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -55,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Login() {
+export default function Login(props) {
 
     const classes = useStyles();
 
@@ -63,6 +49,8 @@ export default function Login() {
     const [password, setPassword] = useState('');
 
     let histoy = useHistory();
+
+    console.log(props.data);
 
     const handleSummit = (event) => {
         console.log('email:', email);
@@ -74,16 +62,19 @@ export default function Login() {
             'email': email,
             'password': password,
         }).then(res => {
-            console.log(JSON.stringify(res));
+            //console.log(JSON.stringify(res));
             localStorage.setItem('userInfo', JSON.stringify({
                 email: res.data.email,
                 token: res.data.token
             }))
+            /* parent reload */
+            props.data();
             histoy.push('/');
         })
     }
 
     return (
+      <React.Fragment>
         <Container component="main" maxWidth="xs">
           <CssBaseline />
           <div className={classes.paper}>
@@ -146,9 +137,10 @@ export default function Login() {
               </Grid>
             </form>
           </div>
-          <Box mt={8}>
+          {/* <Box mt={8}>
             <Copyright />
-          </Box>
+          </Box> */}
         </Container>
-      );
+      </React.Fragment>
+    );
 }

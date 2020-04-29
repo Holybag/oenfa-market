@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
-import { useState } from 'react';
+//import { useState } from 'react';
 
 //import Home from './pages/Home';
 import About from './pages/About';
@@ -23,22 +23,22 @@ import axios from 'axios';
 import qs from 'qs';
 //import { useHistory } from 'react-router-dom';
 
+import FooterApp from './pages/FooterApp';
+
 const API_URL = 'http://localhost:5000';
 
 class App extends Component {
   state = {
     loginState: false
   }
-  // After render()
-  componentDidMount(){
-    console.log('class => componentDidMount');
+  
+  loginCheck = () => {
+    console.log('logCheckFunc');
     var email_token = localStorage.getItem('userInfo');
     const obj = JSON.parse(email_token);
-    //console.log("email_token",email_token);
+    
     var email = obj.email;
     var token = obj.token;
-    //console.log("email:",email);
-    //console.log("token:",token);
     
     const url = `${API_URL}/login/loginCheck`;
     axios({
@@ -59,6 +59,12 @@ class App extends Component {
     })
   }
 
+  // After render()
+  componentDidMount(){
+    console.log('class => componentDidMount');
+    this.loginCheck();
+  }
+
   render() {
     return (
       <BrowserRouter>
@@ -69,10 +75,13 @@ class App extends Component {
         <Route path='/about' component={About} />
         <Route path='/listgoods' component={ListGoods} />
         <Route path='/registergoods' component={RegisterGoods} />        
-        <Route path='/login' component={Login} />
+        <Route path="/login" render={() => <Login data={this.loginCheck} />}/>
         <Route path='/signup' component={SignUp} />        
         <Route path='/viewgoods' component={ViewGoods} />        
-      </BrowserRouter>
+
+        <FooterApp/>
+
+      </BrowserRouter>    
     );
   }
 }
@@ -95,41 +104,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 
-function ButtonAppBar(login) {
-//  console.log("App.js ButtonAppBar");
-//  console.log("login:",login);
+function ButtonAppBar(props) {
+  console.log("App.js ButtonAppBar");
   const classes = useStyles();
-
-  //const [login, setLogin] = useState();
-
-  ////let histoy = useHistory();
-
-  // var email_token = localStorage.getItem('userInfo');
-  // const obj = JSON.parse(email_token);
-  // //console.log("email_token",email_token);
-  // var email = obj.email;
-  // var token = obj.token;
-  // //console.log("email:",email);
-  // //console.log("token:",token);
-  
-  // const url = `${API_URL}/login/loginCheck`;
-  // axios({
-  //   method: 'post',
-  //   url: url,
-  //   data: qs.stringify({
-  //     email: email,
-  //     token: token
-  //   }),
-  //   headers: {
-  //     'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-  //   }
-  // })
-  // .then(res => {
-  //     //console.log(JSON.stringify(res));
-  //     console.log(res.data);
-  //     setLogin(res.data.success);
-  //     //histoy.push('/');
-  // })
 
   return (
     <div className={classes.root}>
@@ -147,8 +124,7 @@ function ButtonAppBar(login) {
             <Button color="primary" variant="contained">home</Button>
           </Link>
           
-          {/* {login ? <TagLogOut/> : <TagLogIn/>} */}
-          {login.currState ? <TagLogOut/> : <TagLogIn/>}
+          {props.currState ? <LogInMenu/> : <LogOutMenu/>}
 
           </Toolbar>
       </AppBar>
@@ -157,8 +133,8 @@ function ButtonAppBar(login) {
 }
 
 
-function TagLogOut() {
-  console.log("taglogOut 로그인 상태 메뉴");
+function LogInMenu() {
+  console.log("LogInMenu");
   return(
     <React.Fragment>
       <Link to='/registergoods'>
@@ -172,8 +148,8 @@ function TagLogOut() {
 }
 
 
-function TagLogIn() {
-  console.log("taglogIn 로그인 아웃 상태 메뉴");
+function LogOutMenu() {
+  console.log("LogOutMenu");
   return(
     <React.Fragment>
       <Link to='/Login'>

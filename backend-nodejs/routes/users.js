@@ -51,14 +51,16 @@ router.post('/', function(req, res, next){
   let email = req.body.email;
   let password = req.body.password;
   let name = req.body.name;
+  let tel = req.body.tel;
   let description = req.body.description;
-  console.log('email:' + email + ' password:' + password + ' name:' + name + ' description:' + description);
+  console.log('email:' + email + ' password:' + password + ' name:' + name + ' tel:' + tel + ' description:' + description);
   
   const usersCollection = db.collection('users');
   usersCollection.insertOne({
     email: email,
     password: password,
     name: name,
+    tel: tel,
     description: description,
     createdAt: new Date(),
     updatedAt: new Date()

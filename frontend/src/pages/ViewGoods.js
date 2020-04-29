@@ -32,6 +32,7 @@ export default function ViewGoods() {
         const currentRoute = window.location.pathname;
         var objId = currentRoute.replace("/viewgoods/", "");  // remove "/viewgoods/"
         let url = `${API_URL}/products/${objId}`;
+        console.log("url",url);
 
         axios.get(url).then(response => response.data)
             .then((data) => {
@@ -95,6 +96,19 @@ export default function ViewGoods() {
                                         등록일: {products.createdAt}
                                     </Typography>
 
+                                </CardContent>
+                            </CardActionArea>
+                        </Card>
+                        {/* 로그인시에는 전화를 걸 수 있도록 */}
+                        <Card className={classes.root}>
+                            <CardActionArea>
+                                <CardContent>
+                                    <Typography gutterBottom variant="h5" component="h2">
+                                        015901400000
+                                    </Typography>
+                                    <Typography gutterBottom variant="h5" component="h2">
+                                        로그인시에는 전화를 걸 수 있도록
+                                    </Typography>
                                 </CardContent>
                             </CardActionArea>
                         </Card>
