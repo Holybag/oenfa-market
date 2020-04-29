@@ -62,8 +62,8 @@ router.post('/loginCheck', function(req, res, next){
 });
 
 router.post('/', function(req, res, next){
-    var email = req.body.email;
-    var password = req.body.password;
+    let email = req.body.email;
+    let password = req.body.password;
 
     if (!email) {
         res.send({ result: false, message: 'no email'});
@@ -108,6 +108,32 @@ router.post('/', function(req, res, next){
         }
     });
 
+});
+
+router.delete('/', function(req, res, next){
+    try {
+        console.log('logout headers authorization:', req.headers.authorization);
+        const token = req.headers.authorization.split(" ")[1];
+        console.log('logout token:', token);
+        const decoded = jwt.decode(token);
+        console.log('decoded value:', decoded);
+        if (decoded.userId) {
+            const loginCollection = db.collection('login');
+            loginCollection.deleteMany({
+                email: decoded.userId
+            }, function(error, result){
+                if (error) {
+                    res.send(error);
+                } else {
+                    res.send({ success: true, message: 'Logout succeed', error: null, data: null });
+                }
+            });
+        } else {
+            res.send({ success: false, message: 'There is no email in token', error: null, data: null });
+        }
+    } catch (error) {
+        res.send({ success: false, message: 'Exception occured', error: error, data: null });
+    }
 });
 
 module.exports = router;
