@@ -8,6 +8,7 @@ import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
 import ViewGoods from './pages/ViewGoods';
 import Login from './pages/Login';
+import Logout from './pages/Logout';
 import SignUp from './pages/SignUp';
 
 import Button from '@material-ui/core/Button';
@@ -36,7 +37,11 @@ class App extends Component {
     console.log('logCheckFunc');
     var email_token = localStorage.getItem('userInfo');
     const obj = JSON.parse(email_token);
-    
+
+    if (obj == null){
+      return;
+    }
+
     var email = obj.email;
     var token = obj.token;
     
@@ -61,7 +66,7 @@ class App extends Component {
 
   // After render()
   componentDidMount(){
-    console.log('class => componentDidMount');
+    // console.log('class => componentDidMount');
     this.loginCheck();
   }
 
@@ -76,6 +81,7 @@ class App extends Component {
         <Route path='/listgoods' component={ListGoods} />
         <Route path='/registergoods' component={RegisterGoods} />        
         <Route path="/login" render={() => <Login data={this.loginCheck} />}/>
+        <Route path="/logout" render={() => <Logout data={this.loginCheck} />}/>        
         <Route path='/signup' component={SignUp} />        
         <Route path='/viewgoods' component={ViewGoods} />        
 
@@ -105,7 +111,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 function ButtonAppBar(props) {
-  console.log("App.js ButtonAppBar");
   const classes = useStyles();
 
   return (
@@ -134,13 +139,13 @@ function ButtonAppBar(props) {
 
 
 function LogInMenu() {
-  console.log("LogInMenu");
+  // console.log("LogInMenu");
   return(
     <React.Fragment>
       <Link to='/registergoods'>
         <Button color="primary" variant="contained">상품 등록</Button>
       </Link>      
-      <Link to='/Login'>
+      <Link to='/Logout'>
         <Button color="primary" variant="contained">LogOut</Button>
       </Link>
     </React.Fragment>
@@ -149,7 +154,7 @@ function LogInMenu() {
 
 
 function LogOutMenu() {
-  console.log("LogOutMenu");
+  // console.log("LogOutMenu");
   return(
     <React.Fragment>
       <Link to='/Login'>
