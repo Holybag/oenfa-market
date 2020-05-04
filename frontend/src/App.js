@@ -8,7 +8,10 @@ import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
 import ViewGoods from './pages/ViewGoods';
 import Login from './pages/Login';
+import Logout from './pages/Logout';
 import SignUp from './pages/SignUp';
+import ViewUser from './pages/ViewUser';
+import UpdUser from './pages/UpdUser';
 
 import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
@@ -24,6 +27,20 @@ import qs from 'qs';
 //import { useHistory } from 'react-router-dom';
 
 import FooterApp from './pages/FooterApp';
+//import MenuListComposition from './MenuListComposition';
+import { useHistory } from 'react-router-dom';
+
+
+// import React from 'react';
+// import Button from '@material-ui/core/Button';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import Paper from '@material-ui/core/Paper';
+import Popper from '@material-ui/core/Popper';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+// import { makeStyles } from '@material-ui/core/styles';
+
 
 const API_URL = 'http://localhost:5000';
 
@@ -36,7 +53,11 @@ class App extends Component {
     console.log('logCheckFunc');
     var email_token = localStorage.getItem('userInfo');
     const obj = JSON.parse(email_token);
-    
+
+    if (obj == null){
+      return;
+    }
+
     var email = obj.email;
     var token = obj.token;
     
@@ -61,14 +82,14 @@ class App extends Component {
 
   // After render()
   componentDidMount(){
-    console.log('class => componentDidMount');
+    // console.log('class => componentDidMount');
     this.loginCheck();
   }
 
   render() {
     return (
       <BrowserRouter>
-
+        
         <ButtonAppBar currState={this.state.loginState}/>
         
         <Route exact path='/' component={ListGoods} />
@@ -76,7 +97,10 @@ class App extends Component {
         <Route path='/listgoods' component={ListGoods} />
         <Route path='/registergoods' component={RegisterGoods} />        
         <Route path="/login" render={() => <Login data={this.loginCheck} />}/>
-        <Route path='/signup' component={SignUp} />        
+        <Route path="/logout" render={() => <Logout data={this.loginCheck} />}/>        
+        <Route path='/signup' component={SignUp} />
+        <Route path='/viewuser' component={ViewUser} />        
+        <Route path='/upduser' component={UpdUser} />        
         <Route path='/viewgoods' component={ViewGoods} />        
 
         <FooterApp/>
@@ -105,7 +129,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 function ButtonAppBar(props) {
-  console.log("App.js ButtonAppBar");
   const classes = useStyles();
 
   return (
@@ -134,22 +157,31 @@ function ButtonAppBar(props) {
 
 
 function LogInMenu() {
-  console.log("LogInMenu");
+  // console.log("LogInMenu");
   return(
     <React.Fragment>
       <Link to='/registergoods'>
         <Button color="primary" variant="contained">상품 등록</Button>
       </Link>      
-      <Link to='/Login'>
+      <Link to='/ViewUser'>
+        <Button color="primary" variant="contained">나의 정보</Button>
+      </Link>
+      <Link to='/UpdUser'>
+        <Button color="primary" variant="contained">설 정</Button>
+      </Link>
+      <Link to='/Logout'>
         <Button color="primary" variant="contained">LogOut</Button>
       </Link>
+
+      {/* <MenuListComposition/> */}
+
     </React.Fragment>
   );
 }
 
 
 function LogOutMenu() {
-  console.log("LogOutMenu");
+  // console.log("LogOutMenu");
   return(
     <React.Fragment>
       <Link to='/Login'>
@@ -158,6 +190,138 @@ function LogOutMenu() {
       <Link to='/SignUp'>
         <Button color="primary" variant="contained">Sign in</Button>
       </Link>
+      
+      {/* <MenuListComposition/> */}
+      
+
     </React.Fragment>
+  );
+}
+
+
+
+const useStyles2 = makeStyles((theme) => ({
+  root: {
+    display: 'flex',
+  },
+  paper: {
+    marginRight: theme.spacing(2),
+  },
+}));
+
+function MenuListComposition() {
+  const classes = useStyles2();
+  const [open, setOpen] = React.useState(false);
+  const anchorRef = React.useRef(null);
+  
+  let history = useHistory();
+
+  const handleToggle = () => {
+    setOpen((prevOpen) => !prevOpen);
+  };
+
+  const handleClose = (event) => {
+    console.log("handleClose");  
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      return;
+    }
+    console.log("setOpen:false");  
+    setOpen(false);
+  };
+
+  const handleProfile = (event) => {
+    console.log("handleProfile");
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      console.log("return");
+      return;
+    }
+    history.push('/ViewUser');
+    console.log("setOpen:false");  
+
+    setOpen(false);
+  };
+
+  const handleUpdUser = (event) => {
+    console.log("handleUpdUser");
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      console.log("return");
+      return;
+    }
+    history.push('/UpdUser');
+    console.log("setOpen:false");  
+
+    setOpen(false);
+  };
+
+  const handleLogout = (event) => {
+    console.log("handleLogout");
+    if (anchorRef.current && anchorRef.current.contains(event.target)) {
+      console.log("return");
+      return;
+    }
+    history.push('/Logout');
+    console.log("setOpen:false");  
+
+    setOpen(false);
+  };
+
+  function handleListKeyDown(event) {
+    if (event.key === 'Tab') {
+      event.preventDefault();
+      setOpen(false);
+    }
+  }
+
+  // return focus to the button when we transitioned from !open -> open
+  const prevOpen = React.useRef(open);
+  React.useEffect(() => {
+    console.log("useEffect");
+    if (prevOpen.current === true && open === false) {
+      anchorRef.current.focus();
+    }
+
+    prevOpen.current = open;
+  }, [open]);
+
+  return (
+    <div className={classes.root}>
+      {/* <Paper className={classes.paper}>
+        <MenuList>
+          <MenuItem>Profile</MenuItem>
+          <MenuItem>My account</MenuItem>
+          <MenuItem>Logout</MenuItem>
+        </MenuList>
+      </Paper> */}
+      <div>
+        <Button
+          color="primary" 
+          variant="contained"
+          ref={anchorRef}
+          aria-controls={open ? 'menu-list-grow' : undefined}
+          aria-haspopup="true"
+          onClick={handleToggle}
+        >
+          My Info
+        </Button>
+        <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                    <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                    <MenuItem onClick={handleUpdUser}>My account</MenuItem>
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </div>
+    </div>
   );
 }

@@ -22,6 +22,7 @@ mongo.MongoClient.connect(url, function(err, client) {
     }
 });
 
+/* for test */
 router.get('/', function(req, res, next){
     const loginCollection = db.collection('login');
     loginCollection.find({}).toArray(function (error, results) {
@@ -62,6 +63,7 @@ router.post('/loginCheck', function(req, res, next){
 });
 
 router.post('/', function(req, res, next){
+    console.log("login router.post");
     let email = req.body.email;
     let password = req.body.password;
 
@@ -76,9 +78,28 @@ router.post('/', function(req, res, next){
     const usersCollection = db.collection('users');
     const loginCollection = db.collection('login');
     usersCollection.find({ email: email, password: password}).count(function(error, count){
+        console.log("count",count);
+        console.log("error",error);
         if (error) {
-            res.send(error);
+            console.log('error');
+            var data = {
+                "success": false,
+                "message": null,
+                "errors": error,
+                "data": null
+            };   
+            res.send(data);
+        } else if (count === 0){
+            console.log('count === 0');
+            var data = {
+                "success": false,
+                "message": 'count is 0',
+                "errors": null,
+                "data": null
+            };   
+            res.send(data);
         } else if (count){
+            console.log('count');
             let payLoad = { 'userId': email };
             let token = jwt.sign(payLoad, tokenKey, {
                 algorithm: 'HS256',
@@ -90,7 +111,13 @@ router.post('/', function(req, res, next){
                 email: email
             }, function(error, result){
                 if (error) {
-                    res.send(error);
+                    var data = {
+                        "success": false,
+                        "message": null,
+                        "errors": error,
+                        "data": null
+                    };   
+                    res.send(data);
                 } else {
                     loginCollection.insertOne({
                         email: email,
@@ -98,9 +125,21 @@ router.post('/', function(req, res, next){
                         token: token
                     }, function(error, result){
                         if (error) {
-                            res.send(error);
+                            var data = {
+                                "success": false,
+                                "message": null,
+                                "errors": error,
+                                "data": null
+                            };   
+                            res.send(data);
                         } else {
-                            res.send({ result: true, email: email, token: token });
+                            var data = {
+                                "success": true,
+                                "message": null,
+                                "errors": null,
+                                "data": { result: true, email: email, token: token }
+                            }; 
+                            res.send(data);
                         }
                     });
                 }
@@ -114,25 +153,37 @@ router.delete('/', function(req, res, next){
     try {
         console.log('logout headers authorization:', req.headers.authorization);
         const token = req.headers.authorization.split(" ")[1];
-        console.log('logout token:', token);
+
         const decoded = jwt.decode(token);
+        
+        if (decoded === null){
+            console.log('decoded is null');
+            res.send({ success: false, message: 'decoded is null', error: null, data: null });
+            return;
+        }
         console.log('decoded value:', decoded);
+            
         if (decoded.userId) {
             const loginCollection = db.collection('login');
             loginCollection.deleteMany({
-                email: decoded.userId
+                    email: decoded.userId
             }, function(error, result){
                 if (error) {
-                    res.send(error);
+                    res.send({ success: false, message: 'Exception occured', error: error, data: null });
+                    console.log('Exception occured');
                 } else {
-                    res.send({ success: true, message: 'Logout succeed', error: null, data: null });
+                    console.log('Logout succeed');                        
+                    res.send({ success: true, message: 'Logout succeed', error: null, data: null});
                 }
             });
         } else {
+            //console.log('There is no email in token');
             res.send({ success: false, message: 'There is no email in token', error: null, data: null });
         }
+    
     } catch (error) {
-        res.send({ success: false, message: 'Exception occured', error: error, data: null });
+        console.log(error);
+        //res.send({ success: false, message: 'Exception occured', error: error, data: null });
     }
 });
 

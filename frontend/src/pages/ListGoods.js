@@ -89,6 +89,7 @@ export default function ListGoods() {
   function loadContents(currCategory) {
     console.log('loadContents');
     let url = `${API_URL}/products`;
+    // console.log("url:", url);
 
     if (currCategory !== undefined && currCategory !== 1004) {  //1004 = All Category
       url = url + "/category/" + currCategory;
@@ -105,9 +106,9 @@ export default function ListGoods() {
   }
 
   function loadCategory() {
-    console.log('loadCategory');
+    // console.log('loadCategory');
     const url = `${API_URL}/category`;
-    console.log("category url:", url);
+    // console.log("category url:", url);
     
     axios.get(url).then(response => response.data)
       .then((data) => {
@@ -120,7 +121,7 @@ export default function ListGoods() {
   }
 
   useEffect(() => {
-    console.log("useEffect did");
+    // console.log("useEffect did");
     loadContents();
     loadCategory();
   }, []);

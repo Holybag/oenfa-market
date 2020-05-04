@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -7,9 +7,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
 //import FormControlLabel from '@material-ui/core/FormControlLabel';
 //import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
+//import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+//import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,18 +19,6 @@ import qs from 'qs';
 
 const API_URL = 'http://localhost:5000'
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -52,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignUp() {
+export default function UpdUser() {
   const classes = useStyles();
 
   const [email, setEmail] = useState('');
@@ -71,9 +59,10 @@ export default function SignUp() {
       console.log('description:',description);
       event.preventDefault();
 
-      const url = `${API_URL}/users`;
+      var userId = email;
+      const url = `${API_URL}/users/${userId}`;
       axios({
-        method: 'post',
+        method: 'put',
         url: url,
         data: qs.stringify({
           email: email,
@@ -88,20 +77,56 @@ export default function SignUp() {
       })
         .then(res => {
           console.log(JSON.stringify(res));
-          history.push('/');
-        
-          let response = res.data;
-          if (response.success === true){
-            alert("가입이 완료되었습니다. 로그인이 필요합니다.");
-            history.push('/login');
+          console.log(res.data);
+          if (res.data.success === true){
+            console.log("Update success !");
+            alert("Update success !");
           } else {
-            alert("가입 실패");
-            //history.push('/');
+            alert("Update fail !");
           }
+          history.push('/');
         })
+
     }
   
-  
+  //const [user, setUser] = useState([]);
+  // const classes = useStyles();
+
+  function loadUserInfo() {
+    console.log('loadUserInfo');
+    let url = `${API_URL}/users/view`;
+    console.log("url", url);
+    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+    console.log('token from localstorage:', token);
+    
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        'authorization': token,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.data)
+      .then((data) => {
+        // modified date string
+        //data.createdAt = data.createdAt.substr(0,10);
+        let result = data.data;
+        console.log(result);
+        //setUser(result);
+        setEmail(result.email);
+        setPassword(result.password);
+        setName(result.name);
+        setDescription(result.description);
+        setTel(result.tel);
+        //console.log(data.createdAt.substr(0,10));
+      });
+  }
+
+  useEffect(() => {
+    loadUserInfo();
+  }, []);
+
   return (
     <React.Fragment>
       <Container component="main" maxWidth="xs">
@@ -111,7 +136,7 @@ export default function SignUp() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            나의 정보 수정
           </Typography>
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
@@ -119,7 +144,7 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
-                  required
+                  disabled
                   fullWidth
                   id="email"
                   label="Email Address"
@@ -197,20 +222,11 @@ export default function SignUp() {
               className={classes.submit}
               onClick={handleSummit}
             >
-              Sign Up
+              수정
             </Button>
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="#" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
+            
           </form>
         </div>
-        <Box mt={5}>
-          <Copyright />
-        </Box>
       </Container>
     </React.Fragment>
   );

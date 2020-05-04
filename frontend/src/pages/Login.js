@@ -48,7 +48,7 @@ export default function Login(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    let histoy = useHistory();
+    let history = useHistory();
 
     console.log(props.data);
 
@@ -63,13 +63,18 @@ export default function Login(props) {
             'password': password,
         }).then(res => {
             //console.log(JSON.stringify(res));
-            localStorage.setItem('userInfo', JSON.stringify({
-                email: res.data.email,
-                token: res.data.token
-            }))
-            /* parent reload */
-            props.data();
-            histoy.push('/');
+            let response = res.data;
+            if (response.success === true){
+              localStorage.setItem('userInfo', JSON.stringify({
+                email: response.data.email,
+                token: response.data.token
+              }))
+              /* parent reload */
+              props.data();
+              history.push('/');
+            } else {
+              alert("login fail");
+            }
         })
     }
 
