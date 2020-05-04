@@ -4,6 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+var mongo = require('mongodb');
+var promise = require('bluebird');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -15,6 +17,16 @@ var loginRouter = require('./routes/login');
 
 var app = express();
 app.use(cors());
+
+const url = 'mongodb://localhost:27017';
+const dbName = 'oenfamarket';
+mongo.connect(url, { promiseLibrary : promise })
+  .catch(err => console.error(err.stack))
+  .then(db => {
+    console.log('mongodb connection success(app.js)');
+    app.locals.db = db.db(dbName);
+    //console.log(app.locals.db);
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -33,7 +45,6 @@ app.use('/products', productsRouter);
 app.use('/upload', fileUploadRouter);
 app.use('/category', categoryRouter);
 app.use('/login', loginRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

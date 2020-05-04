@@ -25,21 +25,23 @@ let upload = multer({ storage: storage }).single('imgFile');
 router.use(bodyParser.urlencoded({ extended: false }));
 
 /////// mongodb //////
-const url = 'mongodb://localhost:27017';
-const dbName = 'oenfamarket';
-var db = null;
-mongo.MongoClient.connect(url, function(err, client) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('Connected successfully to mongodb');
-        db = client.db(dbName);
-    }
-});
+// const url = 'mongodb://localhost:27017';
+// const dbName = 'oenfamarket';
+// var db = null;
+// mongo.MongoClient.connect(url, function(err, client) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('Connected successfully to mongodb');
+//         db = client.db(dbName);
+//     }
+// });
 
 
 /* GET products listing. */
 router.get('/', function (req, res, next) {
+    const db = req.app.locals.db;
+    //console.log(db);
     const productsCollection = db.collection('products');
     productsCollection.find({}).toArray(function (error, results) {
         if (error) {
