@@ -128,6 +128,9 @@ export default function ViewUser() {
                 <CardActionArea>
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
+                      전화번호: {user.tel}
+                    </Typography>
+                    <Typography gutterBottom variant="h5" component="h2">
                       정보: {user.description}
                     </Typography>
                     <Typography gutterBottom variant="h5" component="h2">

@@ -61,6 +61,9 @@ export default function UpdUser() {
 
       var userId = email;
       const url = `${API_URL}/users/${userId}`;
+      const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+      //console.log('token from localstorage:', token);
+  
       axios({
         method: 'put',
         url: url,
@@ -72,6 +75,8 @@ export default function UpdUser() {
           description: description
         }),
         headers: {
+          'authorization': token,
+          'Accept': 'application/json',
           'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
         }
       })
@@ -119,7 +124,16 @@ export default function UpdUser() {
         setName(result.name);
         setDescription(result.description);
         setTel(result.tel);
-        //console.log(data.createdAt.substr(0,10));
+        
+        //let response = data.data;
+        if (data.success === true){
+          //history.push('/');
+        } else {
+          console.log("UpdUser.js: Login fail");
+          alert("Login fail");
+          history.push('/');
+        }
+        
       });
   }
 
