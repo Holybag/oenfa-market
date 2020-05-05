@@ -38,36 +38,30 @@ router.get('/', function (req, res, next) {
 
 router.get('/view/', function (req, res, next) {
 
-  // let id = req.params.id;
-  // console.log('id:', id);
-  //console.log('logout headers authorization:', req.headers.authorization);
   const token = req.headers.authorization.split(" ")[1];
-
   const decoded = jwt.decode(token);
-  
-  if (decoded === null){
-      console.log('decoded is null');
-      res.send({ success: false, message: 'decoded is null', error: null, data: null });
-      return;
-  }
 
-  jwt.verify(token, tokenKey, function(error, decoded) {
-    if(error){
-        var data = {
-                "success": false,
-                "message": error.name,
-                "errors": error.message,
-                "data": error.expiredAt
-            };   
-        //console.log(data);            
-        res.send(data);
-    }else{
+  if (decoded === null) {
+    console.log('decoded is null');
+    res.send({ success: false, message: 'decoded is null', error: null, data: null });
+    return;
+  }
+  jwt.verify(token, tokenKey, function (error, decoded) {
+    if (error) {
+      var data = {
+        "success": false,
+        "message": error.name,
+        "errors": error.message,
+        "data": error.expiredAt
+      };
+      //console.log(data);            
+      res.send(data);
+    } else {
       // success
       let userId = decoded.userId;
-      console.log('email:', decoded);
-
+      //console.log('email:', decoded);
       const usersCollection = db.collection('users');
-      usersCollection.findOne({email: userId}, function (error, results) {
+      usersCollection.findOne({ email: userId }, function (error, results) {
         if (error) {
           res.send(error);
         } else {
@@ -82,13 +76,8 @@ router.get('/view/', function (req, res, next) {
           res.send(data);
         }
       });
-      
-      
     }
-
-    
-});
-
+  });
 });
 
 // router.get('/:id', function (req, res, next) {
@@ -106,7 +95,7 @@ router.get('/view/', function (req, res, next) {
 //   });
 // });
 
-
+/* Sign In */
 router.post('/', function(req, res, next){
   let email = req.body.email;
   let password = req.body.password;
@@ -115,6 +104,11 @@ router.post('/', function(req, res, next){
   let description = req.body.description;
   console.log('email:' + email + ' password:' + password + ' name:' + name + ' tel:' + tel + ' description:' + description);
   
+  if (email === null || email === ""){
+    console.log("error email",email);
+    console.log("type",type(email));
+  }
+
   const usersCollection = db.collection('users');
   usersCollection.insertOne({
     email: email,
@@ -125,6 +119,8 @@ router.post('/', function(req, res, next){
     createdAt: new Date(),
     updatedAt: new Date()
   }, function(error, result){
+    console.log("error",error);
+    //console.log("result",result);
     if (error) {
       var data = {
         "success": false,
@@ -238,44 +234,49 @@ router.delete('/:id', function(req, res, next){
 */
 
 router.put('/:id', function(req, res, next){
-  console.log("router.put");
-  //console.log(req.params);
-  let id = req.params.id;
-  //let email = req.body.email;
-  let password = req.body.password;
-  let name = req.body.name;
-  let description = req.body.description;
-  console.log('id:' + id + ' password:' + password + ' name:' + name + ' description:' + description);
 
-//  res.send(req.params);
-  
-  const usersCollection = db.collection('users');
-  usersCollection.updateOne({
-    email: id
-  }, {
-    $set: {
-      password: password,
-      name: name,
-      description: description
-    }
-  }, function(error, result){
+  const token = req.headers.authorization.split(" ")[1];
+  const decoded = jwt.decode(token);
+
+  if (decoded === null) {
+    //console.log('decoded is null');
+    res.send({ "success": false, "message": 'decoded is null', "error": null, "data": null });
+    return;
+  }
+
+  jwt.verify(token, tokenKey, function (error, decoded) {
     if (error) {
-      var data = {
-        "success": false,
-        "message": null,
-        "errors": error,
-        "data": null
-      };   
+      var data = { "success": false, "message": null, "errors": error, "data": null };
       res.send(data);
-      
     } else {
-      var data = {
-        "success": true,
-        "message": null,
-        "errors": null,
-        "data": result
-      };
-      res.send(data);
+      // success
+      let id = decoded.userId;
+      let password = req.body.password;
+      let name = req.body.name;
+      let tel = req.body.tel;
+      let description = req.body.description;
+      //console.log('id:' + id + ' password:' + password + ' name:' + name + ' description:' + description);
+  
+      const usersCollection = db.collection('users');
+      usersCollection.updateOne({
+        email: id
+      }, {
+        $set: {
+          password: password,
+          name: name,
+          tel: tel,
+          description: description
+        }
+      }, function(error, result){
+        if (error) {
+          var data = { "success": false, "message": null, "errors": error, "data": null };   
+          res.send(data);
+          
+        } else {
+          var data = { "success": true, "message": null, "errors": null, "data": result };
+          res.send(data);
+        }
+      });
     }
   });
 });
