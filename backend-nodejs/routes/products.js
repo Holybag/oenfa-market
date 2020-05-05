@@ -54,6 +54,7 @@ router.get('/', function (req, res, next) {
 
 /* GET product detail Info. */
 router.get('/:objId', function (req, res, next) {
+    const db = req.app.locals.db;
     var objId = req.params.objId;
     var o_id = new mongo.ObjectId(objId);
     //console.log(req.params);  
@@ -69,6 +70,7 @@ router.get('/:objId', function (req, res, next) {
 
 /* GET product list in Category. */
 router.get('/category/:strCategory', function (req, res, next) {
+    const db = req.app.locals.db;
     var categoryCode = Number(req.params.strCategory);
     //console.log(req.params);  
     const productsCollection = db.collection('products');
@@ -95,7 +97,8 @@ router.post('/', checkAuth, upload, function(req, res, next){
     //     // console.log('2 res.req', res.req)
     //     // console.log('최종파일이름:',uploadFileName);
     // });
-    
+    const db = req.app.locals.db;
+
     let title = req.body.title;
     let userId = req.body.userId;
     let category = req.body.category;
@@ -135,6 +138,7 @@ router.post('/', checkAuth, upload, function(req, res, next){
 });
 
 router.delete('/', function(req, res, next){
+    const db = req.app.locals.db;
     const productsCollection = db.collection('products');
     productsCollection.deleteMany({}, function(error, result){
         if (error) {
@@ -163,6 +167,7 @@ router.delete('/', function(req, res, next){
 */
 
 router.delete('/:id', function(req, res, next){
+    const db = req.app.locals.db;
     let id = req.params.id;
     console.log('id:', id);
 
@@ -179,6 +184,7 @@ router.delete('/:id', function(req, res, next){
 });
 
 router.put('/:id', function(req, res, next){
+    const db = req.app.locals.db;
     let id = req.params.id;
     let title = req.body.title;
     let category = req.body.category;
