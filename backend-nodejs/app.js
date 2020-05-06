@@ -20,13 +20,15 @@ app.use(cors());
 
 const url = 'mongodb://localhost:27017';
 const dbName = 'oenfamarket';
-mongo.connect(url, { promiseLibrary : promise })
+//mongo.connect(url, { promiseLibrary : promise })
+mongo.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, })
   .catch(err => console.error(err.stack))
   .then(db => {
     console.log('mongodb connection success(app.js)');
     app.locals.db = db.db(dbName);
     //console.log(app.locals.db);
   });
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

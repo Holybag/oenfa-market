@@ -19,19 +19,6 @@ import qs from 'qs';
 
 const API_URL = 'http://localhost:5000'
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -62,6 +49,42 @@ export default function SignUp() {
   const [description, setDescription] = useState('');
   
   let history = useHistory();
+  
+  const handleIdCheck = (event) => {
+    console.log('handleIdCheck:');
+    event.preventDefault();
+    
+    if (email === ""){
+      alert("이메일 주소를 입력하세요.!")
+      return;
+    }
+
+    const url = `${API_URL}/users/${email}`;
+    axios({
+      method: 'get',
+      url: url,
+      data: qs.stringify({
+        email: email
+      }),
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }
+    })
+      .then(res => {
+        console.log(JSON.stringify(res));
+        //history.push('/');
+      
+        let response = res.data;
+        if (response.success === true){
+          alert("이 이메일을 사용 할 수 없습니다. 다른 이메일 아이디가 필요합니다.");
+          setEmail('');
+        } else {
+          alert("사용이 가능한 이메일 입니다.");
+          //history.push('/');
+        }
+      })
+  }
+
 
   const handleSummit = (event) => {
       console.log('email:',email);
@@ -70,6 +93,18 @@ export default function SignUp() {
       console.log('tel:',tel);
       console.log('description:',description);
       event.preventDefault();
+
+      if (email === ""){
+        alert("Email은 필수 항목입니다.!");
+        setEmail('');
+        return;
+      }
+
+      if (password === ""){
+        alert("비밀번호는 필수 항목입니다.!");
+        setPassword('');
+        return;
+      }
 
       const url = `${API_URL}/users`;
       axios({
@@ -88,7 +123,7 @@ export default function SignUp() {
       })
         .then(res => {
           console.log(JSON.stringify(res));
-          history.push('/');
+          //history.push('/');
         
           let response = res.data;
           if (response.success === true){
@@ -116,7 +151,7 @@ export default function SignUp() {
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
             
-              <Grid item xs={12}>
+              <Grid item xs={8} spacing={2}>
                 <TextField
                   variant="outlined"
                   required
@@ -128,7 +163,20 @@ export default function SignUp() {
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
                 />
-              </Grid>
+                </Grid>
+              <Grid xs={4}>
+                  <Button
+                    type="submit"
+                    Width="100"
+                    variant="contained"
+                    color="primary"
+                    className={classes.submit}
+                    onClick={handleIdCheck}
+                    >중복 체크
+                  </Button>
+                
+            </Grid>
+              
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -201,16 +249,14 @@ export default function SignUp() {
             </Button>
             <Grid container justify="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="./login" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
             </Grid>
           </form>
         </div>
-        <Box mt={5}>
-          <Copyright />
-        </Box>
+        
       </Container>
     </React.Fragment>
   );

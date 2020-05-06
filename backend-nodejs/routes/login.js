@@ -9,21 +9,22 @@ router.use(bodyParser.urlencoded({ extended: false }));
 
 var tokenKey = 'oenfa2020';
 
-/////// mongodb //////
-const url = 'mongodb://localhost:27017';
-const dbName = 'oenfamarket';
-var db = null;
-mongo.MongoClient.connect(url, function(err, client) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('Connected successfully to mongodb');
-        db = client.db(dbName);
-    }
-});
+// /////// mongodb //////
+// const url = 'mongodb://localhost:27017';
+// const dbName = 'oenfamarket';
+// var db = null;
+// mongo.MongoClient.connect(url, function(err, client) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('Connected successfully to mongodb');
+//         db = client.db(dbName);
+//     }
+// });
 
 /* for test */
 router.get('/', function(req, res, next){
+    const db = req.app.locals.db;
     const loginCollection = db.collection('login');
     loginCollection.find({}).toArray(function (error, results) {
         if (error) {
@@ -75,6 +76,7 @@ router.post('/', function(req, res, next){
         return;
     }
 
+    const db = req.app.locals.db;
     const usersCollection = db.collection('users');
     const loginCollection = db.collection('login');
     usersCollection.find({ email: email, password: password}).count(function(error, count){
@@ -164,6 +166,7 @@ router.delete('/', function(req, res, next){
         console.log('decoded value:', decoded);
             
         if (decoded.userId) {
+            const db = req.app.locals.db;
             const loginCollection = db.collection('login');
             loginCollection.deleteMany({
                     email: decoded.userId

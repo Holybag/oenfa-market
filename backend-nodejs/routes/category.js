@@ -7,21 +7,22 @@ var router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 
 
-///// mongodb //////
-const url = 'mongodb://localhost:27017';
-const dbName = 'oenfamarket';
-var db = null;
-mongo.MongoClient.connect(url, function(err, client) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('Connected successfully to mongodb');
-        db = client.db(dbName);
-    }
-});
+// ///// mongodb //////
+// const url = 'mongodb://localhost:27017';
+// const dbName = 'oenfamarket';
+// var db = null;
+// mongo.MongoClient.connect(url, function(err, client) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('Connected successfully to mongodb');
+//         db = client.db(dbName);
+//     }
+// });
 
 /* GET category listing. */
 router.get('/', function (req, res, next) {
+    const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     // Sorting
     categoryCollection.find({}).sort({"sortNo":1}).toArray(function (error, results) {
@@ -37,6 +38,7 @@ router.get('/', function (req, res, next) {
 router.get('/:code', function (req, res, next) {
     var code = Number(req.params.code);
     //console.log(req.params);  
+    const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     categoryCollection.findOne({"code":code}, function (error, results) {
         if (error) {
@@ -53,6 +55,7 @@ router.post('/', function (req, res, next) {
     let strName = req.body.name;
     let strSortNo = req.body.sortNo;
     //console.log('code:' + strCode + ' name:' + strName + ' sortNo:' + strSortNo);
+    const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     categoryCollection.insertOne({
         code: strCode,
@@ -75,6 +78,7 @@ router.post('/', function (req, res, next) {
 router.delete('/:code', function (req, res, next) {
     let code = Number(req.params.code);
     //console.log('code:', code);
+    const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     categoryCollection.deleteOne({"code": code }, function (error, result) {
         if (error) {
@@ -92,6 +96,7 @@ router.put('/:code', function (req, res, next) {
     let sortNo = req.body.sortNo;
     console.log('code:' + code + 'name:' + name + 'sortNo:' + sortNo);
 
+    const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     categoryCollection.updateOne({
         code: code

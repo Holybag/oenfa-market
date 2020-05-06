@@ -166,7 +166,7 @@ export default function ListGoods() {
         </Drawer>
         <main className={classes.content}>
           <Toolbar />
-          <div className={classes.heroContent}>
+          {/* <div className={classes.heroContent}>
             <Container maxWidth="sm">
               <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
                 OE & FA
@@ -191,7 +191,7 @@ export default function ListGoods() {
                 </Grid>
               </div>
             </Container>
-          </div>
+          </div> */}
 
           <Container className={classes.cardGrid} maxWidth="md">
             <Grid container spacing={4}>

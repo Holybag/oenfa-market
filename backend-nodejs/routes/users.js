@@ -10,21 +10,22 @@ var router = express.Router();
 router.use(bodyParser.urlencoded({ extended: false }));
 
 /////// mongodb //////
-const url = 'mongodb://localhost:27017';
-const dbName = 'oenfamarket';
-var db = null;
-mongo.MongoClient.connect(url, function(err, client) {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log('Connected successfully to mongodb');
-        db = client.db(dbName);
-    }
-});
+// const url = 'mongodb://localhost:27017';
+// const dbName = 'oenfamarket';
+// var db = null;
+// mongo.MongoClient.connect(url, function(err, client) {
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('Connected successfully to mongodb');
+//         db = client.db(dbName);
+//     }
+// });
 
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
+  const db = req.app.locals.db;
   const usersCollection = db.collection('users');
   usersCollection.find({}).toArray(function (error, results) {
     if (error) {
@@ -60,6 +61,7 @@ router.get('/view/', function (req, res, next) {
       // success
       let userId = decoded.userId;
       //console.log('email:', decoded);
+      const db = req.app.locals.db;
       const usersCollection = db.collection('users');
       usersCollection.findOne({ email: userId }, function (error, results) {
         if (error) {
@@ -80,20 +82,24 @@ router.get('/view/', function (req, res, next) {
   });
 });
 
-// router.get('/:id', function (req, res, next) {
-
-//   let id = req.params.id;
-//   console.log('id:', id);
-
-//   const usersCollection = db.collection('users');
-//   usersCollection.findOne({_id: new mongo.ObjectId(id)}, function (error, results) {
-//     if (error) {
-//       res.send(error);
-//     } else {
-//       res.send(results);
-//     }
-//   });
-// });
+/* ID Duplicate Check */
+router.get('/:id', function (req, res, next) {
+  let id = req.params.id;
+  //console.log('id:', id);
+  const db = req.app.locals.db;
+  const usersCollection = db.collection('users');
+  usersCollection.findOne({email: id}, function (error, result) {
+    if (error || result === null) {
+      //console.log(error);
+      //console.log(result);
+      var data = { "success": false, "message": "존재하지 않는 이메일", "errors": error, "data": null };
+      res.send(data);
+    } else {
+      var data = { "success": true, "message": "존재하는 이메일", "errors": null, "data": null };
+      res.send(data);
+    }
+  });
+});
 
 /* Sign In */
 router.post('/', function(req, res, next){
@@ -104,11 +110,13 @@ router.post('/', function(req, res, next){
   let description = req.body.description;
   console.log('email:' + email + ' password:' + password + ' name:' + name + ' tel:' + tel + ' description:' + description);
   
-  if (email === null || email === ""){
-    console.log("error email",email);
-    console.log("type",type(email));
+  if (email === null || email === "" || password === ""){
+    console.log("Input required");
+    var data = { "success": false, "message": "Required fields are required.!", "errors": null, "data": null };
+    res.send(data);
   }
 
+  const db = req.app.locals.db;
   const usersCollection = db.collection('users');
   usersCollection.insertOne({
     email: email,
@@ -173,6 +181,7 @@ router.post('/', function(req, res, next){
 
 
 router.delete('/', function(req, res, next){
+  const db = req.app.locals.db;
   const usersCollection = db.collection('users');
 
   usersCollection.deleteMany({}, function(error, result){
@@ -205,6 +214,7 @@ router.delete('/:id', function(req, res, next){
   let id = req.params.id;
   console.log('id:', id);
 
+  const db = req.app.locals.db;
   const usersCollection = db.collection('users');
 
   usersCollection.deleteOne({_id: new mongo.ObjectId(id)}, function(error, result){
@@ -257,6 +267,7 @@ router.put('/:id', function(req, res, next){
       let description = req.body.description;
       //console.log('id:' + id + ' password:' + password + ' name:' + name + ' description:' + description);
   
+      const db = req.app.locals.db;
       const usersCollection = db.collection('users');
       usersCollection.updateOne({
         email: id
