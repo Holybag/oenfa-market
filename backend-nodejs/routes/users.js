@@ -7,6 +7,10 @@ var tokenKey = 'oenfa2020';
 
 var router = express.Router();
 
+const nodemailer = require('nodemailer');
+
+const SVC_URL = 'http://localhost:3000'
+
 router.use(bodyParser.urlencoded({ extended: false }));
 
 /////// mongodb //////
@@ -101,33 +105,43 @@ router.get('/:id', function (req, res, next) {
   });
 });
 
+
 /* Sign In */
-router.post('/', function(req, res, next){
+router.post('/', function (req, res, next) {
   let email = req.body.email;
   let password = req.body.password;
   let name = req.body.name;
   let tel = req.body.tel;
   let description = req.body.description;
+
+  const crypto = require('crypto');
+  const authkey = crypto.randomBytes(20).toString('hex'); // token 생성
+  console.log("authkey", authkey);
+
   console.log('email:' + email + ' password:' + password + ' name:' + name + ' tel:' + tel + ' description:' + description);
-  
-  if (email === null || email === "" || password === ""){
+
+  if (email === null || email === "" || password === "") {
     console.log("Input required");
-    var data = { "success": false, "message": "Required fields are required.!", "errors": null, "data": null };
+    var data = { "success": false, "message": "Fields are required.!", "errors": null, "data": null };
     res.send(data);
   }
+
 
   const db = req.app.locals.db;
   const usersCollection = db.collection('users');
   usersCollection.insertOne({
     email: email,
     password: password,
+    authkey: authkey,           // 인증을 위한 임시 인증 키
+    authttl: 300,               // 인증 제한 시간   (개발 필요)      
+    authstatus: 0,              // 0: 인증전, 1: 인증 후
     name: name,
     tel: tel,
     description: description,
     createdAt: new Date(),
     updatedAt: new Date()
-  }, function(error, result){
-    console.log("error",error);
+  }, function (error, result) {
+    //console.log("error", error);
     //console.log("result",result);
     if (error) {
       var data = {
@@ -144,6 +158,27 @@ router.post('/', function(req, res, next){
         "errors": null,
         "data": result
       };
+
+      // nodemailer Transport 생성
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        //              port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: { // 이메일을 보낼 계정 데이터 입력
+          user: 'jshyun.de@gmail.com',
+          pass: '',
+        },
+      });
+      const emailOptions = { // 옵션값 설정
+        from: 'jshyun.de@gmail.com',
+        to: 'jshyun91@gmail.com',
+        subject: '정상 사용자 인증 이메일입니다.',
+        html: '본인 확인을 위하여 아래의 URL을 클릭하여 주세요.'
+          + `${SVC_URL}/SignUpConfirm/${authkey}`,
+      };
+      /* 상용 적용시 오픈 필요 */
+      //transporter.sendMail(emailOptions, res); //전송
+
       res.send(data);
     }
   });
@@ -178,6 +213,41 @@ router.post('/', function(req, res, next){
     "ok": 1
 }
 */
+
+
+/* Normal user authentication (email confirmation) */
+router.get('/confirm/:authkey', function (req, res, next) {
+  let authkey = req.params.authkey;
+  console.log('confirm authkey:', authkey);
+  let data = { "success": true, "message": null, "errors": null, "data": null };
+  
+  //맞는 키 조회 하고 그 키에 해당하는 사용 여부 필드 업데이트.
+  const db = req.app.locals.db;
+  const usersCollection = db.collection('users');
+  usersCollection.updateOne({
+    authkey: authkey
+  }, {
+    $set: {
+      authkey: '',
+      authstatus: 1,  // 사용 가능 1
+      authttl: 0
+    }
+  }, function(error, result){
+    console.log("업데이트 결과");
+    console.log("result.result.nModified",result.result.nModified);
+    let countUpdated = result.result.nModified;
+    if (error || countUpdated === 0) {
+      var data = { "success": false, "message": null, "errors": error, "data": result };   
+      res.send(data);
+      //res.send("인증 데이타를 찾을 수 없습니다!")
+
+    } else {
+      var data = { "success": true, "message": null, "errors": null, "data": result };
+      res.send(data);
+    }
+  });
+
+});
 
 
 router.delete('/', function(req, res, next){

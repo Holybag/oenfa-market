@@ -10,6 +10,7 @@ import ViewGoods from './pages/ViewGoods';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
 import SignUp from './pages/SignUp';
+import SignUpConfirm from './pages/SignUpConfirm';
 import ViewUser from './pages/ViewUser';
 import UpdUser from './pages/UpdUser';
 
@@ -99,6 +100,7 @@ class App extends Component {
         <Route path="/login" render={() => <Login data={this.loginCheck} />}/>
         <Route path="/logout" render={() => <Logout data={this.loginCheck} />}/>        
         <Route path='/signup' component={SignUp} />
+        <Route path='/signupconfirm' component={SignUpConfirm} />
         <Route path='/viewuser' component={ViewUser} />        
         <Route path='/upduser' component={UpdUser} />        
         <Route path='/viewgoods' component={ViewGoods} />        
