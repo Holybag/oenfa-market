@@ -15,7 +15,9 @@ import { Link as RLink } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 
-const API_URL = 'http://localhost:5000'
+//const API_URL = 'http://localhost:5000'
+const API_URL = process.env.REACT_APP_API_URL;
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -140,7 +142,7 @@ export default function ListGoods() {
               <Breadcrumbs aria-label="breadcrumb">
                 
               {category.map((text, index) => (
-                  <Link color="inherit" href="/"
+                  <Link key={index} color="inherit" href="/"
                     onClick={
                       function (event) {
                       event.preventDefault();

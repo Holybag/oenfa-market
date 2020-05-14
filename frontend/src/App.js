@@ -45,7 +45,12 @@ import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PersonIcon from '@material-ui/icons/Person';
 
-const API_URL = 'http://localhost:5000';
+//const API_URL = 'http://localhost:5000';
+
+//<p>{process.env.REACT_APP_DB_HOST}</p>
+
+const API_URL = process.env.REACT_APP_API_URL;
+console.log("API_URL",API_URL);
 
 class App extends Component {
     state = {

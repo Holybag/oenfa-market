@@ -24,8 +24,8 @@ import CardContent from '@material-ui/core/CardContent';
 //import CardMedia from '@material-ui/core/CardMedia';
 
 
-
-const API_URL = 'http://localhost:5000'
+//const API_URL = 'http://localhost:5000'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles((theme) => ({
   paper: {

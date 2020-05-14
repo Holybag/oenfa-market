@@ -9,15 +9,29 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Container from '@material-ui/core/Container';
 
-const API_URL = 'http://localhost:5000'
 
-const useStyles = makeStyles({
+//const API_URL = 'http://localhost:5000'
+const API_URL = process.env.REACT_APP_API_URL;
+
+// const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
     root: {
-        //  maxWidth: 345,
-        maxWidth: 400,
-    }
-});
+        marginTop: theme.spacing(0),
+        marginBottom: theme.spacing(2),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+    paper: {
+        marginTop: theme.spacing(10),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+    },
+}));
 
 export default function SingUpConfirm() {
     const [result, setResult] = useState();
@@ -28,11 +42,11 @@ export default function SingUpConfirm() {
         const currentRoute = window.location.pathname;
         var authKey = currentRoute.replace("/SignUpConfirm/", "");  // remove "/SignUpConfirm/"
         let url = `${API_URL}/users/confirm/${authKey}`;
-        console.log("url",url);
+        console.log("url", url);
 
         axios.get(url).then(response => response.data)
             .then((data) => {
-                if (data.success === true){
+                if (data.success === true) {
                     setResult("사용자 이메일 인증 성공");
                 } else {
                     setResult("사용자 이메일 인증 실패");
@@ -45,33 +59,31 @@ export default function SingUpConfirm() {
     }, []);
 
     return (
-        <main className={classes.content}>
-            <React.Fragment>
-                <div align="center" >
-                    <div><p></p></div>
-                    <div>
-                        <Card className={classes.root}>
-                            <CardActionArea>
-                                <CardContent>
-                                    <Typography gutterBottom variant="h5" component="h2">
-                                        {result}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                        <div><p></p></div>
-                        <Card className={classes.root}>
-                            <Grid container justify="center">
-                                <Grid item>
-                                    <Link href="../login" variant="body2">
-                                        Already have an account? Sign in
+        <React.Fragment>
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <div className={classes.paper}>
+                    <Card className={classes.root}>
+                        <CardActionArea>
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    {result}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                    <Card className={classes.root}>
+                        <CardActionArea>
+                            <CardContent>
+                            <Link href="../login" variant="body2">
+                                    Already have an account? Sign in
                                     </Link>
-                                </Grid>
-                            </Grid>
-                        </Card>
-                    </div>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                    
                 </div>
-            </React.Fragment>
-        </main>
+            </Container>
+        </React.Fragment>
     );
 }
