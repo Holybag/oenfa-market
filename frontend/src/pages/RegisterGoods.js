@@ -103,7 +103,11 @@ export default function RegGoods() {
     })
       .then(res => {
         console.log(JSON.stringify(res));
-        history.push('/');
+        if (res.succcess){
+          history.push('/');
+        } else {
+          console.log("error message display");
+        }        
       })
   }
 

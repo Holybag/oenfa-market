@@ -27,9 +27,21 @@ router.get('/', function (req, res, next) {
     // Sorting
     categoryCollection.find({}).sort({"sortNo":1}).toArray(function (error, results) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(results);
+            let formatted = {
+                success: true,
+                message: null,
+                errors: null,
+                data: results
+            };
+            res.send(formatted);
         }
     });
 });
@@ -41,10 +53,25 @@ router.get('/:code', function (req, res, next) {
     const db = req.app.locals.db;
     const categoryCollection = db.collection('category');
     categoryCollection.findOne({"code":code}, function (error, results) {
+        let formatted = {
+            success: true,
+            message: null,
+            errors: null,
+            data: null
+        };
         if (error) {
-            res.send(error);
+            formatted.success = false; 
+            formatted.error = error;
+            res.send(formatted);
         } else {
-            res.send(results);
+            if (!results) {
+                formatted.success = false; 
+                formatted.message = 'can not find category by code';
+            } else {
+                formatted.data = [ results ];
+            }
+            
+            res.send(formatted);
         }
     });
 });
@@ -65,9 +92,21 @@ router.post('/', function (req, res, next) {
         updatedAt: new Date()
     }, function (error, result) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'category is created',
+                errors: null,
+                data: result
+            };
+            res.send(formatted);
         }
     });
 
@@ -82,9 +121,21 @@ router.delete('/:code', function (req, res, next) {
     const categoryCollection = db.collection('category');
     categoryCollection.deleteOne({"code": code }, function (error, result) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'category is deleted',
+                errors: null,
+                data: result
+            };
+            res.send(formatted);
         }
     });
 });
@@ -107,9 +158,21 @@ router.put('/:code', function (req, res, next) {
         }
     }, function (error, result) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'category is updated',
+                errors: null,
+                data: result
+            };
+            res.send(formatted);
         }
     });
 });

@@ -99,11 +99,11 @@ export default function ListGoods() {
     }
     axios.get(url).then(response => response.data)
       .then((data) => {
-        setProducts(data);
-        data.map(function (product) {
-          //console.log(product);
-          return 1;
-        });
+        setProducts(data.data);
+        //data.map(function (product) {
+        //  console.log(product);
+        //  return 1;
+        //});
       });
   }
 
@@ -114,11 +114,11 @@ export default function ListGoods() {
     
     axios.get(url).then(response => response.data)
       .then((data) => {
-        setCategory(data);
-        data.map(function (category) {
-          //console.log(category.name);
-          return 1;
-        });
+        setCategory(data.data);
+        // data.map(function (category) {
+        //   console.log(category.name);
+        //   return 1;
+        // });
       });
   }
 

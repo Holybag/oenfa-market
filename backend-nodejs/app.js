@@ -6,6 +6,7 @@ var logger = require('morgan');
 var cors = require('cors');
 var mongo = require('mongodb');
 var promise = require('bluebird');
+var fs = require('fs');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -13,6 +14,7 @@ var productsRouter = require('./routes/products');
 var fileUploadRouter = require('./routes/upload');
 var categoryRouter = require('./routes/category');
 var loginRouter = require('./routes/login');
+
 
 
 var app = express();
@@ -33,8 +35,22 @@ mongo.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, })
     console.log('mongodb connection success(app.js)');
     app.locals.db = db.db(dbName);
     //console.log(app.locals.db);
-  });
 
+    let cateData = fs.readFileSync('../doc/category.json');
+    if (!cateData) {
+      console.error('Can not read category.json');
+    }
+    let category = JSON.parse(cateData);    
+    const categoryCollection = app.locals.db.collection('category');
+    categoryCollection.find({}).count(function(err, res){
+      //console.log('find().count:', res);
+      if (!res) {
+        categoryCollection.insertMany(category);
+        console.log('category data inserted');
+      }
+    });
+    
+  });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
