@@ -12,18 +12,12 @@ import Link from '@material-ui/core/Link';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link as RLink } from 'react-router-dom';
-
-import Drawer from '@material-ui/core/Drawer';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 
-const API_URL = 'http://localhost:5000'
+//const API_URL = 'http://localhost:5000'
+const API_URL = process.env.REACT_APP_API_URL;
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -76,15 +70,23 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(6),
   },
+  paper: {
+    height: 50,
+    width: 100,
+  },
+  categoryroot: {
+    display: 'flex',
+    height: 50,
+  },
 }));
 
 
-//export default function ClippedDrawer() {
 export default function ListGoods() {
   const classes = useStyles();
 
   const [products, setProducts] = useState([]);
   const [category, setCategory] = useState([]);
+  //const [value, setValue] = React.useState(0);
 
   function loadContents(currCategory) {
     console.log('loadContents');
@@ -125,73 +127,34 @@ export default function ListGoods() {
     loadContents();
     loadCategory();
   }, []);
-
+  
   return (
     <React.Fragment>
-      {/* Header Appbar Menu */}
-      {/* <HeaderAppBar/> */}
       
       <div className={classes.root}>
-        <Drawer
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-        >
-          <Toolbar>
-            <Typography variant="h6" color="inherit" noWrap>
-              <Link style={{ textDecoration: 'none' }} to='/'>
-                OE & FA Market
-            </Link>
-            </Typography>
-          </Toolbar>
 
-          <div className={classes.drawerContainer}>
-            <Divider />
-            <List>
-              {category.map((text, index) => (
-                <ListItem button key={text._id} onClick={
-                  function () {
-                    loadContents(text.code);
-                  }}>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  {/* <ListItemText primary={text.name} /> */}
-                  <ListItemText primary={text.name + " [" + text.code + "]"} />
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-          </div>
-        </Drawer>
         <main className={classes.content}>
           <Toolbar />
-          {/* <div className={classes.heroContent}>
-            <Container maxWidth="sm">
-              <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                OE & FA
-            </Typography>
-              <Typography variant="h5" align="center" color="textSecondary" paragraph>
-                여기서 주거니 받거니
-            </Typography>
-              <div className={classes.heroButtons}>
-                <Grid container spacing={2} justify="center">
-                  <Grid item>
-                    <Button variant="contained" color="primary">
-                      상품 조회
-                  </Button>
-                  </Grid>
-                  <Grid item>
-                    <RLink style={{ textDecoration: 'none' }} to='/registergoods'>
-                      <Button variant="outlined">
-                        상품등록
-                    </Button>
-                    </RLink>
-                  </Grid>
-                </Grid>
-              </div>
-            </Container>
-          </div> */}
+          {/* Category Show */}
+          <Container >
+            <Grid>
+              <Grid container justify="center" spacing='2'>
+              <Breadcrumbs aria-label="breadcrumb">
+                
+              {category.map((text, index) => (
+                  <Link key={index} color="inherit" href="/"
+                    onClick={
+                      function (event) {
+                      event.preventDefault();
+                      loadContents(text.code);
+                  }}>
+                    {text.name}
+                  </Link>
+              ))}
+              </Breadcrumbs>
+              </Grid>
+            </Grid>
+          </Container>
 
           <Container className={classes.cardGrid} maxWidth="md">
             <Grid container spacing={4}>
@@ -233,5 +196,3 @@ export default function ListGoods() {
     </React.Fragment>
   );
 }
-
-

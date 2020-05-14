@@ -17,8 +17,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 
-const API_URL = 'http://localhost:5000';
-
+//const API_URL = 'http://localhost:5000';
+const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles((theme) => ({
   paper: {

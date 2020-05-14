@@ -9,7 +9,7 @@ import TextField from '@material-ui/core/TextField';
 //import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+//import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -17,7 +17,8 @@ import Container from '@material-ui/core/Container';
 import axios from 'axios';
 import qs from 'qs';
 
-const API_URL = 'http://localhost:5000'
+//const API_URL = 'http://localhost:5000'
+const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -42,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
+  const [duplicateCheck, setDuplicateCheck] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -56,6 +58,8 @@ export default function SignUp() {
     
     if (email === ""){
       alert("이메일 주소를 입력하세요.!")
+      return;
+    } else if(checkEmail(email) === false){
       return;
     }
 
@@ -79,12 +83,11 @@ export default function SignUp() {
           alert("이 이메일을 사용 할 수 없습니다. 다른 이메일 아이디가 필요합니다.");
           setEmail('');
         } else {
-          alert("사용이 가능한 이메일 입니다.");
-          //history.push('/');
+          alert("사용 가능한 이메일 입니다.");
+          setDuplicateCheck(true);
         }
       })
   }
-
 
   const handleSummit = (event) => {
       console.log('email:',email);
@@ -94,14 +97,19 @@ export default function SignUp() {
       console.log('description:',description);
       event.preventDefault();
 
+      if (duplicateCheck === false){
+        alert("중복 체크를 확인하셔야 합니다.");
+        return;
+      }
+
       if (email === ""){
-        alert("Email은 필수 항목입니다.!");
+        alert("Email은 필수 항목입니다!");
         setEmail('');
         return;
       }
 
       if (password === ""){
-        alert("비밀번호는 필수 항목입니다.!");
+        alert("비밀번호는 필수 항목입니다!");
         setPassword('');
         return;
       }
@@ -136,6 +144,15 @@ export default function SignUp() {
         })
     }
   
+  function checkEmail(email) {
+    var exptext = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
+    //var exptext = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+    if (exptext.test(email) === false) {
+      //이메일 형식이 알파벳+숫자@알파벳+숫자.알파벳+숫자 형식이 아닐경우			
+      alert("이 메일형식이 올바르지 않습니다.");
+      return false;
+    }
+  }
   
   return (
     <React.Fragment>
@@ -167,7 +184,7 @@ export default function SignUp() {
               <Grid xs={4}>
                   <Button
                     type="submit"
-                    Width="100"
+                    width="100"
                     variant="contained"
                     color="primary"
                     className={classes.submit}

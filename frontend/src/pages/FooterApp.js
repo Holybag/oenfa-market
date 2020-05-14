@@ -14,18 +14,14 @@ export default function FooterApp() {
   const classes = useStyles();
   return(
         <React.Fragment>
-        {/* Footer */}
           <footer className={classes.footer}>
-            <Typography variant="h6" align="center" gutterBottom>
-              Footer
-            </Typography>
-            
-            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-              Something here to give the footer a purpose!
-            </Typography>
+            {/* <Typography variant="h6" align="center" gutterBottom>
+            </Typography> */}
             <Copyright />
+            <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
+            oenfa.voc@gmail.com
+            </Typography>
           </footer>
-          {/* End footer */}
         </React.Fragment>
     );
 }
@@ -35,10 +31,9 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
       <Link color="inherit" href="https://material-ui.com/">
-        Oenfa
       </Link>{' '}
       {new Date().getFullYear()}
-      {'.'}
+      {'.'} All rights reserved.
     </Typography>
   );
 }

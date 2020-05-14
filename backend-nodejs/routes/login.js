@@ -80,6 +80,8 @@ router.post('/', function(req, res, next){
     const usersCollection = db.collection('users');
     const loginCollection = db.collection('login');
     usersCollection.find({ email: email, password: password}).count(function(error, count){
+    /* 상용 적용시 변경 */
+    //usersCollection.find({ email: email, password: password, authstatus: 1}).count(function(error, count){
         console.log("count",count);
         console.log("error",error);
         if (error) {
