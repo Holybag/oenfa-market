@@ -130,7 +130,13 @@ function CategoryCode2Name(props) {
     axios.get(url).then(response => response.data)
         .then((data) => {
             //console.log(data.name);
-            setcategoryName(data.name);
+            let category = data.data;
+            if (Array.isArray(category) && category.length > 0){
+                setcategoryName(category[0].name);
+            } else {
+                setcategoryName("");
+            }
+            
         });
 
     return (
