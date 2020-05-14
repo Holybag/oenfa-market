@@ -3,13 +3,30 @@ var mongo = require('mongodb');
 var bodyParser = require('body-parser');
 
 var jwt = require('jsonwebtoken');
-var tokenKey = 'oenfa2020';
+//var tokenKey = 'oenfa2020';
 
 var router = express.Router();
 
 const nodemailer = require('nodemailer');
 
-const SVC_URL = 'http://localhost:3000'
+//const SVC_URL = 'http://localhost:3000'
+
+const config = process.env.NODE_ENV === "prod"
+  ? require("../application.prod.json")
+  : require("../application.dev.json");
+
+const SVC_URL = config.email.SVC_URL;
+var tokenKey = config.auth.tokenKey;
+
+const emailAdmin = config.email.emailAdmin;
+const emailPass = config.email.emailPass; 
+const emailSender = config.email.emailSender; 
+
+console.log("SVC_URL",SVC_URL);
+console.log("emailAdmin",emailAdmin);
+console.log("emailPass",emailPass);
+console.log("emailSender",emailSender);
+
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
@@ -165,17 +182,20 @@ router.post('/', function (req, res, next) {
         //              port: 465,
         secure: true, // true for 465, false for other ports
         auth: { // 이메일을 보낼 계정 데이터 입력
-          user: 'jshyun.de@gmail.com',
-          pass: '',
+          //user: 'jshyun.de@gmail.com',
+          //pass: '',
+          user: emailAdmin,
+          pass: emailPass,
         },
       });
       const emailOptions = { // 옵션값 설정
-        from: 'jshyun.de@gmail.com',
-        to: 'jshyun91@gmail.com',
+        from: emailSender,
+        to: email,
         subject: '정상 사용자 인증 이메일입니다.',
         html: '본인 확인을 위하여 아래의 URL을 클릭하여 주세요.'
           + `${SVC_URL}/SignUpConfirm/${authkey}`,
       };
+      console.log("emailOptions",emailOptions);
       /* 상용 적용시 오픈 필요 */
       //transporter.sendMail(emailOptions, res); //전송
 

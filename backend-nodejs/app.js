@@ -18,8 +18,14 @@ var loginRouter = require('./routes/login');
 var app = express();
 app.use(cors());
 
-const url = 'mongodb://localhost:27017';
-const dbName = 'oenfamarket';
+const config = process.env.NODE_ENV === "prod"
+  ? require("./application.prod.json")
+  : require("./application.dev.json");
+
+const url = config.db.url;
+const dbName = config.db.dbName;
+
+
 //mongo.connect(url, { promiseLibrary : promise })
 mongo.connect(url, { useUnifiedTopology: true, useNewUrlParser: true, })
   .catch(err => console.error(err.stack))

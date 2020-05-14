@@ -1,0 +1,15 @@
+{
+    "auth":{
+        "tokenKey":"oenfa2020"
+    },
+    "db":{
+        "dbName":"oenfamarket",
+        "url": "mongodb://localhost:27017"
+    },
+    "email":{
+        "SVC_URL":"http://localhost:3000",
+        "emailAdmin":"jshyun.de@gmail.com",
+        "emailPass":"",
+        "emailSender":"helper@oenfa.com" 
+    }
+}
