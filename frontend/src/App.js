@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter, Route, Link } from 'react-router-dom';
-//import { useState } from 'react';
-
-//import Home from './pages/Home';
+import { BrowserRouter, Route } from 'react-router-dom';
 import About from './pages/About';
 import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
@@ -13,317 +10,355 @@ import SignUp from './pages/SignUp';
 import SignUpConfirm from './pages/SignUpConfirm';
 import ViewUser from './pages/ViewUser';
 import UpdUser from './pages/UpdUser';
-
-import Button from '@material-ui/core/Button';
+//import Button from '@material-ui/core/Button';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-
 import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
 import axios from 'axios';
 import qs from 'qs';
 //import { useHistory } from 'react-router-dom';
-
 import FooterApp from './pages/FooterApp';
 //import MenuListComposition from './MenuListComposition';
 import { useHistory } from 'react-router-dom';
-
-
-// import React from 'react';
-// import Button from '@material-ui/core/Button';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuItem from '@material-ui/core/MenuItem';
-import MenuList from '@material-ui/core/MenuList';
 // import { makeStyles } from '@material-ui/core/styles';
-
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+//import InboxIcon from '@material-ui/icons/MoveToInbox';
+//import MailIcon from '@material-ui/icons/Mail';
+import clsx from 'clsx';
+import { useTheme } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import LockOpenSharpIcon from '@material-ui/icons/LockOpenSharp';
+import AssignmentIndIcon from '@material-ui/icons/AssignmentInd';
+import SettingsIcon from '@material-ui/icons/Settings';
+import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import PersonIcon from '@material-ui/icons/Person';
 
 const API_URL = 'http://localhost:5000';
 
 class App extends Component {
-  state = {
-    loginState: false
-  }
-  
-  loginCheck = () => {
-    console.log('logCheckFunc');
-    var email_token = localStorage.getItem('userInfo');
-    const obj = JSON.parse(email_token);
-
-    if (obj == null){
-      return;
+    state = {
+        loginState: false,
+        drawerState: false
     }
 
-    var email = obj.email;
-    var token = obj.token;
-    
-    const url = `${API_URL}/login/loginCheck`;
-    axios({
-      method: 'post',
-      url: url,
-      data: qs.stringify({
-        email: email,
-        token: token
-      }),
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      }
-    })
-    .then(res => {
-        //console.log(JSON.stringify(res));
-        console.log(res.data);
-        this.setState({loginState:res.data.success})
-    })
-  }
+    loginCheck = () => {
+        console.log('logCheckFunc');
+        var email_token = localStorage.getItem('userInfo');
+        const obj = JSON.parse(email_token);
 
-  // After render()
-  componentDidMount(){
-    // console.log('class => componentDidMount');
-    this.loginCheck();
-  }
+        if (obj == null) {
+            return;
+        }
 
-  render() {
-    return (
-      <BrowserRouter>
-        
-        <ButtonAppBar currState={this.state.loginState}/>
-        
-        <Route exact path='/' component={ListGoods} />
-        <Route path='/about' component={About} />
-        <Route path='/listgoods' component={ListGoods} />
-        <Route path='/registergoods' component={RegisterGoods} />        
-        <Route path="/login" render={() => <Login data={this.loginCheck} />}/>
-        <Route path="/logout" render={() => <Logout data={this.loginCheck} />}/>        
-        <Route path='/signup' component={SignUp} />
-        <Route path='/signupconfirm' component={SignUpConfirm} />
-        <Route path='/viewuser' component={ViewUser} />        
-        <Route path='/upduser' component={UpdUser} />        
-        <Route path='/viewgoods' component={ViewGoods} />        
+        var email = obj.email;
+        var token = obj.token;
 
-        <FooterApp/>
+        const url = `${API_URL}/login/loginCheck`;
+        axios({
+            method: 'post',
+            url: url,
+            data: qs.stringify({
+                email: email,
+                token: token
+            }),
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        })
+            .then(res => {
+                //console.log(JSON.stringify(res));
+                console.log(res.data);
+                this.setState({ loginState: res.data.success })
+            })
+    }
 
-      </BrowserRouter>    
-    );
-  }
+    // After render()
+    componentDidMount() {
+        // console.log('class => componentDidMount');
+        this.loginCheck();
+    }
+
+    render() {
+        return (
+            <BrowserRouter>
+
+                <ButtonAppBar currState={this.state.loginState} />
+
+                <Route exact path='/' component={ListGoods} />
+                <Route path='/about' component={About} />
+                <Route path='/listgoods' component={ListGoods} />
+                <Route path='/registergoods' component={RegisterGoods} />
+                <Route path="/login" render={() => <Login data={this.loginCheck} />} />
+                <Route path="/logout" render={() => <Logout data={this.loginCheck} />} />
+                <Route path='/signup' component={SignUp} />
+                <Route path='/signupconfirm' component={
+                    SignUpConfirm} />
+                <Route path='/viewuser' component={ViewUser} />
+                <Route path='/upduser' component={UpdUser} />
+                <Route path='/viewgoods' component={ViewGoods} />
+
+                <FooterApp />
+
+            </BrowserRouter>
+        );
+    }
 }
 
 export default App;
 
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-    marginLeft: theme.spacing(30),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+const drawerWidth = 240;
 
+const useStyles = makeStyles((theme) => ({
+    title: {
+        flexGrow: 1,
+    },
+    root: {
+        display: 'flex',
+    },
+    appBar: {
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+    },
+    appBarShift: {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginLeft: drawerWidth,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    menuButton: {
+        marginRight: theme.spacing(2),
+    },
+    hide: {
+        display: 'none',
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: drawerWidth,
+    },
+    drawerHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        padding: theme.spacing(0, 1),
+        // necessary for content to be below app bar
+        ...theme.mixins.toolbar,
+        justifyContent: 'flex-end',
+    },
+    content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth,
+    },
+    contentShift: {
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+        marginLeft: 0,
+    },
+    footer: {
+        backgroundColor: theme.palette.background.paper,
+        padding: theme.spacing(6),
+    },
+}));
 
 
 function ButtonAppBar(props) {
-  const classes = useStyles();
+    const classes = useStyles();
 
-  return (
-    <div className={classes.root}>
-      <AppBar position="static">
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="primary" aria-label="menu">
-            <Link to='/' color="inherit" >
-              <MenuIcon />
-            </Link>
-          </IconButton>
-          <Typography variant="h6" className={classes.title}>
-            OE & FA Market
-          </Typography>
-          <Link to='/'>
-            <Button color="primary" variant="contained">home</Button>
-          </Link>
-          
-          {props.currState ? <LogInMenu/> : <LogOutMenu/>}
+    const theme = useTheme();
+    const [open, setOpen] = React.useState(false);
 
-          </Toolbar>
-      </AppBar>
-    </div>
-  );
-}
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
 
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
 
-function LogInMenu() {
-  // console.log("LogInMenu");
-  return(
-    <React.Fragment>
-      <Link to='/registergoods'>
-        <Button color="primary" variant="contained">상품 등록</Button>
-      </Link>      
-      <Link to='/ViewUser'>
-        <Button color="primary" variant="contained">나의 정보</Button>
-      </Link>
-      <Link to='/UpdUser'>
-        <Button color="primary" variant="contained">설 정</Button>
-      </Link>
-      <Link to='/Logout'>
-        <Button color="primary" variant="contained">LogOut</Button>
-      </Link>
-
-      {/* <MenuListComposition/> */}
-
-    </React.Fragment>
-  );
-}
-
-
-function LogOutMenu() {
-  // console.log("LogOutMenu");
-  return(
-    <React.Fragment>
-      <Link to='/Login'>
-        <Button color="primary" variant="contained">Log in</Button>
-      </Link>
-      <Link to='/SignUp'>
-        <Button color="primary" variant="contained">Sign in</Button>
-      </Link>
-      
-      {/* <MenuListComposition/> */}
-      
-
-    </React.Fragment>
-  );
-}
-
-
-
-const useStyles2 = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-  },
-  paper: {
-    marginRight: theme.spacing(2),
-  },
-}));
-
-function MenuListComposition() {
-  const classes = useStyles2();
-  const [open, setOpen] = React.useState(false);
-  const anchorRef = React.useRef(null);
-  
-  let history = useHistory();
-
-  const handleToggle = () => {
-    setOpen((prevOpen) => !prevOpen);
-  };
-
-  const handleClose = (event) => {
-    console.log("handleClose");  
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      return;
-    }
-    console.log("setOpen:false");  
-    setOpen(false);
-  };
-
-  const handleProfile = (event) => {
-    console.log("handleProfile");
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      console.log("return");
-      return;
-    }
-    history.push('/ViewUser');
-    console.log("setOpen:false");  
-
-    setOpen(false);
-  };
-
-  const handleUpdUser = (event) => {
-    console.log("handleUpdUser");
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      console.log("return");
-      return;
-    }
-    history.push('/UpdUser');
-    console.log("setOpen:false");  
-
-    setOpen(false);
-  };
-
-  const handleLogout = (event) => {
-    console.log("handleLogout");
-    if (anchorRef.current && anchorRef.current.contains(event.target)) {
-      console.log("return");
-      return;
-    }
-    history.push('/Logout');
-    console.log("setOpen:false");  
-
-    setOpen(false);
-  };
-
-  function handleListKeyDown(event) {
-    if (event.key === 'Tab') {
-      event.preventDefault();
-      setOpen(false);
-    }
-  }
-
-  // return focus to the button when we transitioned from !open -> open
-  const prevOpen = React.useRef(open);
-  React.useEffect(() => {
-    console.log("useEffect");
-    if (prevOpen.current === true && open === false) {
-      anchorRef.current.focus();
+    const parentCallback = () => {
+        // 자식 컴포넌트에서 받은 값을 이용한 로직 처리
+        console.log("dataFromChild : ");
+        handleDrawerClose();
     }
 
-    prevOpen.current = open;
-  }, [open]);
+    return (
+        <div className={classes.root}>
 
-  return (
-    <div className={classes.root}>
-      {/* <Paper className={classes.paper}>
-        <MenuList>
-          <MenuItem>Profile</MenuItem>
-          <MenuItem>My account</MenuItem>
-          <MenuItem>Logout</MenuItem>
-        </MenuList>
-      </Paper> */}
-      <div>
-        <Button
-          color="primary" 
-          variant="contained"
-          ref={anchorRef}
-          aria-controls={open ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleToggle}
-        >
-          My Info
-        </Button>
-        <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+            <CssBaseline />
+            <AppBar
+                position="fixed"
+                className={clsx(classes.appBar, {
+                    [classes.appBarShift]: open,
+                })}
             >
-              <Paper>
-                <ClickAwayListener onClickAway={handleClose}>
-                  <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                    <MenuItem onClick={handleProfile}>Profile</MenuItem>
-                    <MenuItem onClick={handleUpdUser}>My account</MenuItem>
-                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </div>
-    </div>
-  );
+                <Toolbar>
+                    <IconButton
+                        color="inherit"
+                        aria-label="open drawer"
+                        onClick={handleDrawerOpen}
+                        edge="start"
+                        className={clsx(classes.menuButton, open && classes.hide)}
+                    >
+                        <MenuIcon />
+                    </IconButton>
+                    <Typography variant="h6" noWrap>
+                        OE & FA Market
+          </Typography>
+                </Toolbar>
+            </AppBar>
+
+            <Drawer
+                className={classes.drawer}
+                variant="persistent"
+                anchor="left"
+                open={open}
+                classes={{
+                    paper: classes.drawerPaper,
+                }}
+            >
+                <div className={classes.drawerHeader}>
+                    <IconButton onClick={handleDrawerClose}>
+                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+                    </IconButton>
+                </div>
+                <Divider />
+
+                {props.currState ? <LogInMenu callbackFromParent={parentCallback} /> : <LogOutMenu callbackFromParent={parentCallback} />}
+
+            </Drawer>
+        </div>
+    );
+}
+
+
+function LogInMenu(props) {
+    // console.log("LogInMenu");
+    let history = useHistory();
+
+    const handleSummitHome = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/');
+    }
+    const handleSummitMy = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/ViewUser');
+    }
+    const handleSummitReg = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/registergoods');
+    }
+    const handleSummitSetting = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/UpdUser');
+    }
+    const handleSummitLogout = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/Logout');
+    }
+
+    return (
+        <React.Fragment>
+            <ListItem button key='0' onClick={handleSummitHome}>
+                <ListItemIcon><HomeIcon color="secondary" /></ListItemIcon>
+                <ListItemText primary="홈" />
+            </ListItem>
+            <ListItem button key='1' onClick={handleSummitMy}>
+                <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItemText primary="나의 정보" />
+            </ListItem>
+            <ListItem button key='2' onClick={handleSummitReg}>
+                <ListItemIcon><AddAPhotoIcon /></ListItemIcon>
+                <ListItemText primary="상품 등록" />
+            </ListItem>
+            <ListItem button key='3' onClick={handleSummitSetting}>
+                <ListItemIcon><SettingsIcon /></ListItemIcon>
+                <ListItemText primary="설 정" />
+            </ListItem>
+            <ListItem button key='4' onClick={handleSummitLogout}>
+                <ListItemIcon><ExitToAppIcon /></ListItemIcon>
+                <ListItemText primary="LogOut" />
+            </ListItem>
+
+        </React.Fragment>
+    );
+}
+
+
+function LogOutMenu(props) {
+    // console.log("LogOutMenu");
+    let history = useHistory();
+
+    const handleSummitHome = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/');
+    }
+    const handleSummitLogin = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/Login');
+    }
+    const handleSummitSignUp = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/SignUp');
+    }
+
+    return (
+        <React.Fragment>
+            <List>
+                <ListItem button key='1' onClick={handleSummitHome}>
+                    <ListItemIcon><HomeIcon color="primary" /></ListItemIcon>
+                    <ListItemText primary="홈" />
+                </ListItem>
+                <ListItem button key='2' onClick={handleSummitLogin}>
+                    <ListItemIcon><LockOpenSharpIcon /></ListItemIcon>
+                    <ListItemText primary="Log in" />
+                </ListItem>
+                <ListItem button key='3' onClick={handleSummitSignUp}>
+                    <ListItemIcon><AssignmentIndIcon /></ListItemIcon>
+                    <ListItemText primary="Sign in" />
+                </ListItem>
+            </List>
+        </React.Fragment>
+    );
+}
+
+
+function HomeIcon(props) {
+    return (
+        <SvgIcon {...props}>
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </SvgIcon>
+    );
 }

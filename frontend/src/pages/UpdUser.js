@@ -114,19 +114,18 @@ export default function UpdUser() {
       }
     }).then(response => response.data)
       .then((data) => {
-        // modified date string
-        //data.createdAt = data.createdAt.substr(0,10);
-        let result = data.data;
-        console.log(result);
-        //setUser(result);
-        setEmail(result.email);
-        setPassword(result.password);
-        setName(result.name);
-        setDescription(result.description);
-        setTel(result.tel);
         
         //let response = data.data;
         if (data.success === true){
+          let result = data.data;
+          console.log(result);
+          //setUser(result);
+          setEmail(result.email);
+          setPassword(result.password);
+          setName(result.name);
+          setDescription(result.description);
+          setTel(result.tel);
+          
           //history.push('/');
         } else {
           console.log("UpdUser.js: Login fail");

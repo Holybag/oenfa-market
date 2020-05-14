@@ -78,14 +78,14 @@ export default function ViewUser() {
       .then((data) => {
         // modified date string
         //data.createdAt = data.createdAt.substr(0,10);
-        setUser(data.data);
         console.log(data);
-        //console.log(data.email);
-        //console.log(data.createdAt);
 
-        //let response = data.data;
+        // setUser(data.data);
+        // console.log(data);
+        
         if (data.success === true){
-          //history.push('/');
+          setUser(data.data);
+          console.log(data);
         } else {
           alert("Login fail");
           history.push('/');
