@@ -38,9 +38,9 @@ export default function ViewGoods() {
         axios.get(url).then(response => response.data)
             .then((data) => {
                 // modified date string
-                data.createdAt = data.createdAt.substr(0,10);
-                setProducts(data);
-                console.log(data.image);
+                data.data.createdAt = data.data.createdAt.substr(0,10);
+                setProducts(data.data);
+                console.log(data.data.image);
                 //console.log(data.createdAt.substr(0,10));
             });
     }

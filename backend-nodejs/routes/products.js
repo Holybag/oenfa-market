@@ -45,9 +45,21 @@ router.get('/', function (req, res, next) {
     const productsCollection = db.collection('products');
     productsCollection.find({}).toArray(function (error, results) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(results);
+            let formatted = {
+                success: true,
+                message: null,
+                errors: null,
+                data: results
+            };
+            res.send(formatted);
         }
     });
 });
@@ -61,9 +73,21 @@ router.get('/:objId', function (req, res, next) {
     const productsCollection = db.collection('products');
     productsCollection.findOne({"_id":o_id}, function (error, results) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(results);
+            let formatted = {
+                success: true,
+                message: null,
+                errors: null,
+                data: results
+            };
+            res.send(formatted);
         }
     });
 });
@@ -75,10 +99,22 @@ router.get('/category/:strCategory', function (req, res, next) {
     //console.log(req.params);  
     const productsCollection = db.collection('products');
     productsCollection.find({"category":categoryCode}).toArray(function (error, results) {
-            if (error) {
-            res.send(error);
+        if (error) {
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(results);
+            let formatted = {
+                success: true,
+                message: null,
+                errors: null,
+                data: results
+            };
+            res.send(formatted);
         }
     });
 });
@@ -119,19 +155,29 @@ router.post('/', checkAuth, upload, function(req, res, next){
         createdAt: createdAt,
     }, function(error, result){
         if (error){
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            let result = {
-                title: title,
-                userId: userId,
-                category: category,
-                price: price,
-                description: description,
-                image: newFile,
-                createdAt: createdAt,                
-            }
-
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'Product is created',
+                errors: null,
+                data: {
+                    title: title,
+                    userId: userId,
+                    category: category,
+                    price: price,
+                    description: description,
+                    image: newFile,
+                    createdAt: createdAt
+                }
+            };
+            res.send(formatted);            
         }
     });
     
@@ -142,9 +188,21 @@ router.delete('/', function(req, res, next){
     const productsCollection = db.collection('products');
     productsCollection.deleteMany({}, function(error, result){
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: result.deletedCount + ' products are deleted',
+                errors: null,
+                data: null
+            };
+            res.send(formatted);
         }
     });
 });
@@ -176,9 +234,23 @@ router.delete('/:id', function(req, res, next){
         _id: new mongo.ObjectID(id)
     }, function(error, result){
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'Product is deleted',
+                errors: null,
+                data: {
+                    id: id
+                }
+            };
+            res.send(formatted);
         }
     });
 });
@@ -206,9 +278,23 @@ router.put('/:id', function(req, res, next){
     }, 
     function(error, result){
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(result);
+            let formatted = {
+                success: true,
+                message: 'Product is updated',
+                errors: null,
+                data: {
+                    id: id
+                }
+            };
+            res.send(formatted);
         }
     });
 });
