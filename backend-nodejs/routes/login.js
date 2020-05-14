@@ -7,7 +7,13 @@ var router = express.Router();
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
-var tokenKey = 'oenfa2020';
+//var tokenKey = 'oenfa2020';
+
+const config = process.env.NODE_ENV === "prod"
+  ? require("../application.prod.json")
+  : require("../application.dev.json");
+
+var tokenKey = config.auth.tokenKey;
 
 // /////// mongodb //////
 // const url = 'mongodb://localhost:27017';
