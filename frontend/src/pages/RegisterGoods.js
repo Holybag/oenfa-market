@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
@@ -10,6 +10,8 @@ import TextField from '@material-ui/core/TextField';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
+import Select from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
 //import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
@@ -19,6 +21,7 @@ import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import axios from 'axios';
+import { MenuItem, InputLabel } from '@material-ui/core';
 //import { Redirect } from 'react-router-dom';
 
 
@@ -75,8 +78,32 @@ export default function RegGoods() {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState('');
+  const [categoryList, setCategoryList] = useState([]);
 
   let history = useHistory();
+
+  function loadCategoryList() {
+    const url = `${API_URL}/category`;
+
+    axios.get(url).then(response => response.data)
+      .then((data) => {
+        setCategoryList(data.data);
+        console.log(data.data);
+      })
+  }
+
+  const categoryListSelected = (event) => {
+    //console.log('event value:', event.target);
+    setCategory(event.target.value);
+    // categoryList.map((category) => {
+    //   console.log(category.name);
+    //   if (category.name === event.target.name) {
+    //     setCategory(category.code)
+    //     console.log('category selected:', category.name);
+    //     return;
+    //   }
+    // });
+  }
 
   const handleSummit = (event) => {
     console.log('title:',title);
@@ -102,14 +129,19 @@ export default function RegGoods() {
       }
     })
       .then(res => {
-        console.log(JSON.stringify(res));
-        if (res.succcess){
+        //console.log(JSON.stringify(res));
+        console.log(res.data);
+        if (res.data.success){
           history.push('/');
         } else {
           console.log("error message display");
         }        
       })
   }
+
+  useEffect(() => {
+    loadCategoryList();
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -155,17 +187,27 @@ export default function RegGoods() {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                id="category"
-                label="카테고리"
-                name="category"
-                autoComplete="lname"
+            <FormControl variant="outlined" style={{width: "100%"}}>
+            <InputLabel id="outlined-label-category">
+                카테고리
+              </InputLabel>
+              <Select
+                id='category'
+                labelId='outlined-label-category'
+                label='카테고리'
                 value={category}
-                onChange={(event) => setCategory(event.target.value)}
-              />
+                // onChange={(event) => setCategory(event.target.value)}
+                onChange={categoryListSelected}
+              >
+                <MenuItem value={0} key={0}>None</MenuItem>
+                {categoryList.map((category, index) => (
+                  <MenuItem value={category.code} key={index+1}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+                
+              </Select>
+            </FormControl>
             </Grid>
             <Grid item xs={12}>
               <TextField
