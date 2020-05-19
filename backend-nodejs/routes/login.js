@@ -34,9 +34,21 @@ router.get('/', function(req, res, next){
     const loginCollection = db.collection('login');
     loginCollection.find({}).toArray(function (error, results) {
         if (error) {
-            res.send(error);
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
         } else {
-            res.send(results);
+            let formatted = {
+                success: true,
+                message: null,
+                errors: null,
+                data: results
+            };
+            res.send(formatted);
         }
     });
 });

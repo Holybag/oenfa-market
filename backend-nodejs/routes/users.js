@@ -50,9 +50,21 @@ router.get('/', function (req, res, next) {
   const usersCollection = db.collection('users');
   usersCollection.find({}).toArray(function (error, results) {
     if (error) {
-      res.send(error);
+      let formatted = {
+        success: false,
+        message: null,
+        errors: error,
+        data: null
+      };
+      res.send(formatted);
     } else {
-      res.send(results);
+      let formatted = {
+        success: true,
+        message: null,
+        errors: null,
+        data: results
+      };
+      res.send(formatted);
     }
   });
 });
@@ -86,7 +98,13 @@ router.get('/view/', function (req, res, next) {
       const usersCollection = db.collection('users');
       usersCollection.findOne({ email: userId }, function (error, results) {
         if (error) {
-          res.send(error);
+          let data = {
+            success: false,
+            message: null,
+            errors: error,
+            data: null
+        };
+        res.send(data);
         } else {
           //res.send(results);
           var data = {
@@ -276,9 +294,11 @@ router.delete('/', function(req, res, next){
 
   usersCollection.deleteMany({}, function(error, result){
     if (error) {
-      res.send(error);
+      var data = { "success": false, "message": null, "errors": error, "data": null };   
+      res.send(data);
     } else {
-      res.send(result);
+      var data = { "success": true, "message": null, "errors": null, "data": result };   
+      res.send(data);
     }
   })
 });
@@ -309,9 +329,11 @@ router.delete('/:id', function(req, res, next){
 
   usersCollection.deleteOne({_id: new mongo.ObjectId(id)}, function(error, result){
     if (error) {
-      res.send(error);
+      var data = { "success": false, "message": null, "errors": error, "data": null };   
+      res.send(data);
     } else {
-      res.send(result);
+      var data = { "success": true, "message": null, "errors": null, "data": result };   
+      res.send(data);
     }
   });
 });
