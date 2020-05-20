@@ -45,6 +45,9 @@ import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PersonIcon from '@material-ui/icons/Person';
 
+
+import "./assets/scss/material-kit-react.scss?v=1.8.0";
+
 //const API_URL = 'http://localhost:5000';
 
 //<p>{process.env.REACT_APP_DB_HOST}</p>
@@ -108,12 +111,10 @@ class App extends Component {
                 <Route path="/login" render={() => <Login data={this.loginCheck} />} />
                 <Route path="/logout" render={() => <Logout data={this.loginCheck} />} />
                 <Route path='/signup' component={SignUp} />
-                <Route path='/signupconfirm' component={
-                    SignUpConfirm} />
+                <Route path='/signupconfirm' component={SignUpConfirm} />
                 <Route path='/viewuser' component={ViewUser} />
                 <Route path='/upduser' component={UpdUser} />
                 <Route path='/viewgoods' component={ViewGoods} />
-
                 <FooterApp />
 
             </BrowserRouter>

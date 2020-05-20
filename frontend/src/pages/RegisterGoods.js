@@ -25,19 +25,6 @@ import axios from 'axios';
 //const API_URL = 'http://localhost:5000'
 const API_URL = process.env.REACT_APP_API_URL;
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Oenfa
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -75,6 +62,7 @@ export default function RegGoods() {
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [imageFile, setImageFile] = useState('');
+  const [imageFile2, setImageFile2] = useState('');
 
   let history = useHistory();
 
@@ -86,6 +74,7 @@ export default function RegGoods() {
     event.preventDefault();
     const formData = new FormData();
     formData.append('imgFile', imageFile);
+    formData.append('imgFile', imageFile2);
     formData.append('title', title);
     formData.append('userId', 1);
     formData.append('category', category);
@@ -103,7 +92,11 @@ export default function RegGoods() {
     })
       .then(res => {
         console.log(JSON.stringify(res));
-        if (res.succcess){
+        
+        console.log("res.data.success", res.data.success);
+        
+        if (res.data.success === true){
+          alert("상품 등록 성공");
           history.push('/');
         } else {
           console.log("error message display");
@@ -137,7 +130,22 @@ export default function RegGoods() {
                   <PhotoCamera />
                 </IconButton>
               </label>
-              {/* </div> */}
+            </Grid>
+
+            {/* second image file process*/}
+            <Grid item xs={12}>
+              <input 
+                name="imgFile2" 
+                type="file"
+                onChange={(event) => setImageFile2(event.target.files[0])}
+                accept="image/*" 
+                className={classes.input} 
+                id="icon-button-file2" />
+              <label htmlFor="icon-button-file2">
+                <IconButton color="primary" aria-label="upload picture" component="span">
+                  <PhotoCamera />
+                </IconButton>
+              </label>
             </Grid>
 
             <Grid item xs={12}>
@@ -207,18 +215,8 @@ export default function RegGoods() {
           >
             상품 등록
           </Button>
-          {/* <Grid container justify="flex-end">
-            <Grid item>
-              <Link href="#" variant="body2">
-                Already have an account? Sign in
-              </Link>
-            </Grid>
-          </Grid> */}
         </form>
       </div>
-      <Box mt={5}>
-        <Copyright />
-      </Box>
     </Container>
   );
 }

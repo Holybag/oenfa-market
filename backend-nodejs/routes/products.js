@@ -4,14 +4,16 @@ var mongo = require('mongodb');
 var bodyParser = require('body-parser');
 const checkAuth = require('../middleware/check-auth');
 
-
 var router = express.Router();
+
+console.log("storage");
 let storage = multer.diskStorage({    
     destination: function(req, file, callback){
+        console.log("dest");
         callback(null, "uploadfiles/");
     },
     filename: function(req, file, callback){
-        //console.log('multer.diskStorage');
+        console.log('multer.diskStorage');
         let arrSplite = file.originalname.split('.');
         let arrFirstpart = arrSplite.slice(0, arrSplite.length-1);
         let firstPart = arrFirstpart.join('');
@@ -20,22 +22,11 @@ let storage = multer.diskStorage({
     }
 });
 
-let upload = multer({ storage: storage }).single('imgFile');
+//let upload = multer({ storage: storage,  limits: { fileSize: 5 * 1024 * 1024 } }).single('imgFile');
+let upload = multer({ storage: storage,  limits: { fileSize: 5 * 1024 * 1024 } }).array('imgFile',10);
+console.log("upload");
 
 router.use(bodyParser.urlencoded({ extended: false }));
-
-/////// mongodb //////
-// const url = 'mongodb://localhost:27017';
-// const dbName = 'oenfamarket';
-// var db = null;
-// mongo.MongoClient.connect(url, function(err, client) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         console.log('Connected successfully to mongodb');
-//         db = client.db(dbName);
-//     }
-// });
 
 
 /* GET products listing. */
@@ -87,6 +78,7 @@ router.get('/:objId', function (req, res, next) {
                 errors: null,
                 data: results
             };
+            console.log("results:",results);
             res.send(formatted);
         }
     });
@@ -121,7 +113,8 @@ router.get('/category/:strCategory', function (req, res, next) {
 
 
 router.post('/', checkAuth, upload, function(req, res, next){
-    //let uploadFileName;
+    console.log("POST");
+        //let uploadFileName;
     // (req, res, function(err){
     //     if (err){
     //         console.log('에러발생',JSON.stringify(err));
@@ -141,8 +134,14 @@ router.post('/', checkAuth, upload, function(req, res, next){
     let price = req.body.price;
     let description = req.body.description;
     let createdAt = new Date();
-    let newFile = req.file.filename;
-    console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
+//    let newFile = req.files[0].filename;
+    
+    let newFiles = [];
+    for(i=0;i < req.files.length; i++){
+        newFiles.push(req.files[i].filename);
+    };
+    console.log("newFiles:",newFiles);
+    //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
 
     const productsCollection = db.collection('products');
     productsCollection.insertOne({
@@ -151,7 +150,8 @@ router.post('/', checkAuth, upload, function(req, res, next){
         category: parseInt(category),
         price: parseInt(price),
         description: description,
-        image: newFile,
+        //image: newFile,
+        images: newFiles,
         createdAt: createdAt,
     }, function(error, result){
         if (error){
@@ -173,7 +173,8 @@ router.post('/', checkAuth, upload, function(req, res, next){
                     category: category,
                     price: price,
                     description: description,
-                    image: newFile,
+                    //image: newFile,
+                    images: newFiles,
                     createdAt: createdAt
                 }
             };
