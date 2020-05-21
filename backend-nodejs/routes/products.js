@@ -62,7 +62,7 @@ router.get('/:objId', function (req, res, next) {
     var o_id = new mongo.ObjectId(objId);
     //console.log(req.params);  
     const productsCollection = db.collection('products');
-    productsCollection.findOne({"_id":o_id}, function (error, results) {
+    productsCollection.findOne({"_id":o_id}, function (error, result) {
         if (error) {
             let formatted = {
                 success: false,
@@ -72,13 +72,33 @@ router.get('/:objId', function (req, res, next) {
             };
             res.send(formatted);
         } else {
+            // increase view counting
+            console.log('view goods counting:', result.viewCount);
+            if (result.viewCount >= 0) {
+                let newCount = result.viewCount + 1;
+                productsCollection.updateOne({
+                    _id: o_id
+                }, {
+                    $set: { 
+                        viewCount: newCount
+                    }
+                }, 
+                function(error, result){
+                    if (error) {
+                        console.log('viewCount error:', error)
+                    } else {
+                        console.log('viewCount increased:', newCount);
+                    }
+                });
+            }
+                        
             let formatted = {
                 success: true,
                 message: null,
                 errors: null,
-                data: results
+                data: result
             };
-            console.log("results:",results);
+            console.log("result:",result);
             res.send(formatted);
         }
     });
@@ -114,18 +134,6 @@ router.get('/category/:strCategory', function (req, res, next) {
 
 router.post('/', checkAuth, upload, function(req, res, next){
     console.log("POST");
-        //let uploadFileName;
-    // (req, res, function(err){
-    //     if (err){
-    //         console.log('에러발생',JSON.stringify(err));
-    //         res.status(400).send('fail saving image');
-    //         return;
-    //     }
-    //     uploadFileName = res.req.file.filename;
-    //     // console.log('1 res:', res);
-    //     // console.log('2 res.req', res.req)
-    //     // console.log('최종파일이름:',uploadFileName);
-    // });
     const db = req.app.locals.db;
 
     let title = req.body.title;
@@ -134,6 +142,7 @@ router.post('/', checkAuth, upload, function(req, res, next){
     let price = req.body.price;
     let description = req.body.description;
     let createdAt = new Date();
+    let updatedAt = new Date();
 //    let newFile = req.files[0].filename;
     
     let newFiles = [];
@@ -152,7 +161,10 @@ router.post('/', checkAuth, upload, function(req, res, next){
         description: description,
         //image: newFile,
         images: newFiles,
+        viewCount: 0,
+        favoriteUsers: [],
         createdAt: createdAt,
+        updatedAt: updatedAt
     }, function(error, result){
         if (error){
             let formatted = {

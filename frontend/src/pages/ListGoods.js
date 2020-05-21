@@ -179,7 +179,7 @@ export default function ListGoods() {
                     </CardContent>
                     <CardActions>
                       <Button size="small" color="primary">
-                        View
+                        {card.viewCount} View
                     </Button>
                       <Button size="small" color="primary">
                         Edit

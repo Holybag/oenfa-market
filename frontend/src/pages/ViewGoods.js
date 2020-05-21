@@ -106,7 +106,7 @@ export default function ViewGoods() {
                                     {products.price} 원
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary" component="p">
-                                    950 View
+                                    {products.viewCount} View
                                 </Typography>
                                 <Typography variant="body1" color="textSecondary" component="p">
                                     등록일: {products.createdAt}
