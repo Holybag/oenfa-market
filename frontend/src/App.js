@@ -3,7 +3,10 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import About from './pages/About';
 import RegisterGoods from './pages/RegisterGoods';
 import ListGoods from './pages/ListGoods';
+import MyListGoods from './pages/MyListGoods';
+
 import ViewGoods from './pages/ViewGoods';
+import UpdGoods from './pages/UpdGoods';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
 import SignUp from './pages/SignUp';
@@ -108,6 +111,8 @@ class App extends Component {
                 <Route path='/about' component={About} />
                 <Route path='/listgoods' component={ListGoods} />
                 <Route path='/registergoods' component={RegisterGoods} />
+                {/* <Route path='/mylistgoods'  render={() => <MyListGoods data={this.loginCheck} />} /> */}
+                <Route path='/mylistgoods'  component={MyListGoods} />
                 <Route path="/login" render={() => <Login data={this.loginCheck} />} />
                 <Route path="/logout" render={() => <Logout data={this.loginCheck} />} />
                 <Route path='/signup' component={SignUp} />
@@ -115,6 +120,7 @@ class App extends Component {
                 <Route path='/viewuser' component={ViewUser} />
                 <Route path='/upduser' component={UpdUser} />
                 <Route path='/viewgoods' component={ViewGoods} />
+                <Route path='/updgoods' component={UpdGoods} />
                 <FooterApp />
 
             </BrowserRouter>
@@ -276,6 +282,11 @@ function LogInMenu(props) {
         props.callbackFromParent();
         history.push('/ViewUser');
     }
+    const handleSummitProd = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/MyListGoods');
+    }
     const handleSummitReg = (event) => {
         event.preventDefault();
         props.callbackFromParent();
@@ -301,6 +312,10 @@ function LogInMenu(props) {
             <ListItem button key='1' onClick={handleSummitMy}>
                 <ListItemIcon><PersonIcon /></ListItemIcon>
                 <ListItemText primary="나의 정보" />
+            </ListItem>
+            <ListItem button key='6' onClick={handleSummitProd}>
+                <ListItemIcon><AddAPhotoIcon /></ListItemIcon>
+                <ListItemText primary="상품 관리" />
             </ListItem>
             <ListItem button key='2' onClick={handleSummitReg}>
                 <ListItemIcon><AddAPhotoIcon /></ListItemIcon>

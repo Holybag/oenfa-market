@@ -21,6 +21,8 @@ import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import axios from 'axios';
+import qs from 'qs';
+
 import { MenuItem, InputLabel } from '@material-ui/core';
 //import { Redirect } from 'react-router-dom';
 
@@ -58,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function RegGoods() {
+export default function UpdGoods() {
   const classes = useStyles();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -103,36 +105,106 @@ export default function RegGoods() {
     formData.append('imgFile', imageFile);
     formData.append('imgFile', imageFile2);
     formData.append('title', title);
-    //formData.append('userId', 1);
+    formData.append('userId', 1);
     formData.append('category', category);
     formData.append('price', price);
     formData.append('description', description);
-    const url = `${API_URL}/products`;
+    
+    //const url = `${API_URL}/products`;
+    
     const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
-    //console.log('token from localstorage:', token);
-    //console.log('get the token from localstorage:');
-    axios.post(url, formData, {
+    const currentRoute = window.location.pathname;
+    var objId = currentRoute.replace("/UpdGoods/", "");  // remove "/viewgoods/"
+    let url = `${API_URL}/products/${objId}`;
+    console.log("url", url);
+    console.log("formData", formData);
+
+
+    //axios.put(url, formData, {
+    axios({
+      method: 'put',
+      url: url,
+      data: qs.stringify({
+        imgFile: [imageFile,imageFile2],
+        title: title,
+        category: category,
+        price: price,
+        description: description
+      }),
       headers: {
         'authorization': token,
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        //'Content-Type': 'application/json'
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
       }
+      
     })
       .then(res => {
         //console.log(JSON.stringify(res));
         //console.log(res.data);
         if (res.data.success){
-          history.push('/');
+
+          //history.push('/');
+          alert("상품 수정 성공: " + res.data.message);
         } else {
           //console.log(res.data.errors);
           //console.log("error message display");
-          alert("상품 등록 실패: " + res.data.message);
+          alert("상품 수정 실패: " + res.data.message);
         }        
       })
   }
 
+  function loadGoodsInfo() {
+    console.log('loadGoodsInfo');
+    //let url = `${API_URL}/products/view`;
+    //console.log("url", url);
+    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+    console.log('token from localstorage:', token);
+
+    const currentRoute = window.location.pathname;
+    var objId = currentRoute.replace("/UpdGoods/", "");  // remove "/viewgoods/"
+    let url = `${API_URL}/products/${objId}`;
+    console.log("url", url);
+
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        'authorization': token,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.data)
+      .then((data) => {
+        
+        //let response = data.data;
+        if (data.success === true){
+          let result = data.data;
+          console.log("결과");
+          console.log(result);
+          setTitle(result.title);
+          setCategory(result.category);
+          setPrice(result.price);
+          setDescription(result.description);
+  
+          setImageFile(result.images[0]);
+          setImageFile2(result.images[1]);
+          console.log(result.images[0]);
+          console.log(result.images[1]);
+  
+          //history.push('/');
+        } else {
+          console.log("loadGoodsInfo fail");
+          alert("load GoodsInfo fail");
+          //history.push('/');
+        }
+        
+      });
+  }
+
   useEffect(() => {
     loadCategoryList();
+    loadGoodsInfo();
   }, []);
 
   return (
@@ -143,7 +215,7 @@ export default function RegGoods() {
           {/* <LockOutlinedIcon /> */}
         </Avatar>
         <Typography component="h1" variant="h5">
-          상품 등록 !!
+          상품 정보 수정 !!
         </Typography>
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -168,7 +240,7 @@ export default function RegGoods() {
               <input 
                 name="imgFile2" 
                 type="file"
-                onChange={(event) => setImageFile2(event.target.files[0])}
+                  onChange={(event) => setImageFile2(event.target.files[0])}
                 accept="image/*" 
                 className={classes.input} 
                 id="icon-button-file2" />
@@ -254,7 +326,7 @@ export default function RegGoods() {
             className={classes.submit}
             onClick={handleSummit}
           >
-            상품 등록
+            상품 정보 수정
           </Button>
         </form>
       </div>

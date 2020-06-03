@@ -3,9 +3,9 @@ import axios from 'axios';
 import { useState, useEffect } from 'react';
 //import { makeStyles } from '@material-ui/core/styles';
 //import Card from '@material-ui/core/Card';
-import CardActionArea from '@material-ui/core/CardActionArea';
+//import CardActionArea from '@material-ui/core/CardActionArea';
 import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
+//import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 
 // react component for creating beautiful carousel
@@ -13,39 +13,39 @@ import Carousel from "react-slick";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // @material-ui/icons
-import LocationOn from "@material-ui/icons/LocationOn";
+//import LocationOn from "@material-ui/icons/LocationOn";
 // core components
 import GridContainer from "../components/Grid/GridContainer.js";
 import GridItem from "../components/Grid/GridItem.js";
 import Card from "../components/Card/Card.js";
 
 import styles from "../assets/jss/material-kit-react/views/componentsSections/carouselStyle.js";
-import { container } from "../assets/jss/material-kit-react.js";
+//import { container } from "../assets/jss/material-kit-react.js";
 
 const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles(styles);
 
-const useStylesContens = makeStyles((theme) => ({
-    content: {
-        //marginTop: theme.spacing(0),
-        display: 'flex',
-        alignItems: 'center',
-        flexDirection: 'column',
-    },
-    cardBox: {
-        //maxWidth: 600,
-        display: 'flex',
-        alignItems: 'left',
-        flexDirection: 'column',
-    },
-}));
+// const useStylesContens = makeStyles((theme) => ({
+//     content: {
+//         //marginTop: theme.spacing(0),
+//         display: 'flex',
+//         alignItems: 'center',
+//         flexDirection: 'column',
+//     },
+//     cardBox: {
+//         //maxWidth: 600,
+//         display: 'flex',
+//         alignItems: 'left',
+//         flexDirection: 'column',
+//     },
+// }));
 
 export default function ViewGoods() {
     const [products, setProducts] = useState([]);
     const [images, setImages] = useState(['']);
     const classes = useStyles();
-    const classesContents = useStylesContens();
+//    const classesContents = useStylesContens();
 
     function loadContents() {
         console.log('loadContents01');
@@ -140,27 +140,27 @@ export default function ViewGoods() {
     );
 }
 
-/* change category code to name */
-function CategoryCode2Name(props) {
-    const [categoryName, setcategoryName] = useState();
+// /* change category code to name */
+// function CategoryCode2Name(props) {
+//     const [categoryName, setcategoryName] = useState();
 
-    let url = `${API_URL}/category/${props.code}`;
-    axios.get(url).then(response => response.data)
-        .then((data) => {
-            //console.log(data.name);
-            let category = data.data;
-            if (Array.isArray(category) && category.length > 0) {
-                setcategoryName(category[0].name);
-            } else {
-                setcategoryName("");
-            }
-        });
-    return (
-        <React.Fragment>
-            {categoryName}
-        </React.Fragment>
-    );
-}
+//     let url = `${API_URL}/category/${props.code}`;
+//     axios.get(url).then(response => response.data)
+//         .then((data) => {
+//             //console.log(data.name);
+//             let category = data.data;
+//             if (Array.isArray(category) && category.length > 0) {
+//                 setcategoryName(category[0].name);
+//             } else {
+//                 setcategoryName("");
+//             }
+//         });
+//     return (
+//         <React.Fragment>
+//             {categoryName}
+//         </React.Fragment>
+//     );
+// }
 
 function ImageCarousel(props) {
     //console.log("ImageCarousel");

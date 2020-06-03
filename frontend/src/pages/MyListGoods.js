@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -14,6 +15,7 @@ import { useState, useEffect } from 'react';
 import { Link as RLink } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import qs from 'qs';
 
 //const API_URL = 'http://localhost:5000'
 const API_URL = process.env.REACT_APP_API_URL;
@@ -81,16 +83,108 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function ListGoods() {
+export default function MyListGoods() {
+  console.log("MyListGoods");
+  
   const classes = useStyles();
+  let history = useHistory();
 
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
   const [category, setCategory] = useState([]);
   //const [value, setValue] = React.useState(0);
+  const [user, setUser] = useState('');
+  
 
-  function loadContents(currCategory) {
-    console.log('loadContents');
+  function loginCheck(){
+    console.log('logCheckFunc in MyListGoods');
+    var email_token = localStorage.getItem('userInfo');
+    const obj = JSON.parse(email_token);
+    if (obj == null) {
+        return;
+    }
+    var email = obj.email;
+    var token = obj.token;
+    const url = `${API_URL}/login/loginCheck`;
+    axios({
+        method: 'post',
+        url: url,
+        data: qs.stringify({
+            email: email,
+            token: token
+        }),
+        headers: {
+            'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        }
+    })
+        .then(res => {
+            //console.log(JSON.stringify(res));
+            console.log(res.data);
+            console.log("여기");
+            if(res.data.success === true){
+              console.log("성공",res.data.data.userId);
+              setUser(res.data.data.userId);
+            } else {
+              console.log("fail");
+            }
+            //this.setState({ loginState: res.data.success })
+            
+            //setUser(res.)
+        })
+  }
+
+  /* 사용자가 올린 컨텐츠만 가져오기 */
+  function loadContents() {
+    console.log('loadContents in MyListGoods');
+      
+    let url = `${API_URL}/products`;
+    url = url + "/mylist/mylist";
+    console.log("url:", url);
+    
+    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+    console.log('token from localstorage:', token);
+    
+    axios({
+      method: 'get',
+      url: url,
+      headers: {
+        'authorization': token,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }).then(response => response.data)
+      .then((data) => {
+        // modified date string
+        //data.createdAt = data.createdAt.substr(0,10);
+        console.log(data);
+
+        // setUser(data.data);
+        // console.log(data);
+        
+        if (data.success === true){
+          setProducts(data.data);
+          console.log("데이타 왔나 ?");
+          console.log(data.data);
+          
+          var i =0;
+          let productsImages = [];
+          for(i=0; i < data.data.length;i++){
+            if (data.data[i].images !== undefined){   // 에러처리
+              productsImages[i] = data.data[i].images[0];
+            }
+          }
+          setImages(productsImages);
+          
+        } else {
+          alert("Login fail");
+          //history.push('/');
+        }
+
+      });
+  }
+
+  function loadContentsCategory(currCategory) {
+    console.log('loadContentsCategory in MyListGoods');
     let url = `${API_URL}/products`;
     // console.log("url:", url);
 
@@ -101,19 +195,14 @@ export default function ListGoods() {
     axios.get(url).then(response => response.data)
       .then((data) => {
         setProducts(data.data);
-        
-        var i =0;
-        let productsImages = [];
-        for(i=0; i < data.data.length;i++){
-          if (data.data[i].images !== undefined){
-            productsImages[i] = data.data[i].images[0];
-          }
-        }
-        setImages(productsImages);
-      
+        //data.map(function (product) {
+        //  console.log(product);
+        //  return 1;
+        //});
       });
   }
 
+  
   function loadCategory() {
     // console.log('loadCategory');
     const url = `${API_URL}/category`;
@@ -129,8 +218,50 @@ export default function ListGoods() {
       });
   }
 
+  const handleEdit = (productsObjId) => {
+      history.push(`/UpdGoods/${productsObjId}`);
+  }
+
+  const handleDelete = (productsObjId) => {
+
+    console.log("productsObjId",productsObjId);
+    const url = `${API_URL}/products/${productsObjId}`;
+    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+    //console.log('token from localstorage:', token);
+    console.log('url=', url);
+
+    axios({
+      method: 'delete',
+      url: url,
+      // data: qs.stringify({
+      //   email: email,
+      // }),
+      headers: {
+        'authorization': token,
+        'Accept': 'application/json',
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }
+    })
+      .then(res => {
+        console.log(JSON.stringify(res));
+        console.log(res.data);
+        if (res.data.success === true){
+          console.log("Delete success !");
+          alert("Delete success !");
+          // reload page
+          loadContents();
+        } else {
+          alert("Delete fail !");
+        }
+      })
+  }
+
+
   useEffect(() => {
-    // console.log("useEffect did");
+    console.log("useEffect did");
+    /* parent reload */
+    //props.data();
+    loginCheck();
     loadContents();
     loadCategory();
   }, []);
@@ -143,7 +274,7 @@ export default function ListGoods() {
         <main className={classes.content}>
           <Toolbar />
           {/* Category Show */}
-          <Container >
+          {/* <Container >
             <Grid>
               <Grid container justify="center" spacing='2'>
               <Breadcrumbs aria-label="breadcrumb">
@@ -161,7 +292,7 @@ export default function ListGoods() {
               </Breadcrumbs>
               </Grid>
             </Grid>
-          </Container>
+          </Container> */}
 
           <Container className={classes.cardGrid} maxWidth="md">
             <Grid container spacing={4}>
@@ -169,10 +300,15 @@ export default function ListGoods() {
                 <Grid item key={card._id} xs={12} sm={6} md={4}>
                   <Card className={classes.card}>
                     <RLink to={'/viewgoods/' + card._id}>
+                      {/* <CardMedia
+                        className={classes.cardMedia}
+                        image={API_URL + '/imageFiles/' + card.image}
+                        title={card.title}
+                      /> */}
                       <CardMedia
                         className={classes.cardMedia}
-                        // image={API_URL + '/imageFiles/' + card.image}
                         image={API_URL + '/imageFiles/' + images[index]}
+
                         title={card.title}
                       />
                     </RLink>
@@ -189,8 +325,21 @@ export default function ListGoods() {
                       <Button size="small" color="primary">
                         {card.viewCount} View
                     </Button>
-                      <Button size="small" color="primary">
+                      <Button size="small" color="primary"
+                      onClick={
+                        function (event) {
+                        event.preventDefault();
+                        handleEdit(card._id);
+                    }}>
                         Edit
+                    </Button>
+                    <Button size="small" color="primary" 
+                    onClick={
+                      function (event) {
+                      event.preventDefault();
+                      handleDelete(card._id);
+                  }}>
+                        Delete
                     </Button>
                     </CardActions>
                   </Card>

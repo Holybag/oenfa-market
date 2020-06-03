@@ -3,10 +3,17 @@ const multer = require('multer');
 var mongo = require('mongodb');
 var bodyParser = require('body-parser');
 const checkAuth = require('../middleware/check-auth');
+var jwt = require('jsonwebtoken');
 
 var router = express.Router();
 
-console.log("storage");
+const config = process.env.NODE_ENV === "prod"
+  ? require("../application.prod.json")
+  : require("../application.dev.json");
+var tokenKey = config.auth.tokenKey;
+
+
+//console.log("storage");
 let storage = multer.diskStorage({    
     destination: function(req, file, callback){
         console.log("dest");
@@ -24,7 +31,7 @@ let storage = multer.diskStorage({
 
 //let upload = multer({ storage: storage,  limits: { fileSize: 5 * 1024 * 1024 } }).single('imgFile');
 let upload = multer({ storage: storage,  limits: { fileSize: 5 * 1024 * 1024 } }).array('imgFile',10);
-console.log("upload");
+//console.log("upload");
 
 router.use(bodyParser.urlencoded({ extended: false }));
 
@@ -131,72 +138,147 @@ router.get('/category/:strCategory', function (req, res, next) {
     });
 });
 
+/* GET product My list in MyListGoods.js */
+router.get('/mylist/mylist', checkAuth, function (req, res, next) {
+    //const db = req.app.locals.db;
+    //var categoryCode = Number(req.params.strCategory);
+    console.log("mylist/mylist");  
 
-router.post('/', checkAuth, upload, function(req, res, next){
-    console.log("POST");
+    // 인증이 있는 부분 미들웨어로 변경
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.decode(token);
+    if (decoded === null) {
+        console.log('decoded is null');
+        res.send({ success: false, message: 'decoded is null', error: null, data: null });
+        return;
+    }
+    // After check-auth.js (in middleware)
+    let userId = decoded.userId;
+
     const db = req.app.locals.db;
-
-    let title = req.body.title;
-    let userId = req.body.userId;
-    let category = req.body.category;
-    let price = req.body.price;
-    let description = req.body.description;
-    let createdAt = new Date();
-    let updatedAt = new Date();
-//    let newFile = req.files[0].filename;
-    
-    let newFiles = [];
-    for(i=0;i < req.files.length; i++){
-        newFiles.push(req.files[i].filename);
-    };
-    console.log("newFiles:",newFiles);
-    //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
-
     const productsCollection = db.collection('products');
-    productsCollection.insertOne({
-        title: title,
-        userId: parseInt(userId),
-        category: parseInt(category),
-        price: parseInt(price),
-        description: description,
-        //image: newFile,
-        images: newFiles,
-        viewCount: 0,
-        favoriteUsers: [],
-        createdAt: createdAt,
-        updatedAt: updatedAt
-    }, function(error, result){
-        if (error){
-            let formatted = {
+    productsCollection.find({userId: userId }).toArray(function (error, results) {
+    //productsCollection.find().toArray(function (error, results) {
+        if (error) {
+            let data = {
                 success: false,
                 message: null,
                 errors: error,
                 data: null
             };
-            res.send(formatted);
+            res.send(data);
         } else {
-            let formatted = {
-                success: true,
-                message: 'Product is created',
-                errors: null,
-                data: {
-                    title: title,
-                    userId: userId,
-                    category: category,
-                    price: price,
-                    description: description,
-                    //image: newFile,
-                    images: newFiles,
-                    createdAt: createdAt
-                }
+            //res.send(results);
+            var data = {
+                "success": true,
+                "message": null,
+                "errors": null,
+                "data": results
             };
-            res.send(formatted);            
+            //console.log(data);
+            //console.log(data.data);
+            res.send(data);
         }
     });
-    
 });
 
-router.delete('/', function(req, res, next){
+
+router.post('/', checkAuth, function(req, res, next){
+    console.log("POST");
+
+    // After check-auth.js (in middleware)
+    // get userId from token
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.decode(token);
+    if (decoded === null) {
+        console.log('decoded is null');
+        res.send({ success: false, message: 'decoded is null', error: null, data: null });
+        return;
+    }
+    let userId = decoded.userId;
+
+    upload(req, res, function (err) {
+        if (err) {
+            // 업로드할때 오류가 발생함
+            console.log("업로드 오류");
+            let formatted = {
+                success: false,
+                message: err.message,
+                errors: err,
+                data: null
+            };
+            res.send(formatted);
+            //return
+        } else {
+            console.log("정상 실행");
+            // 정상적으로 완료됨
+            const db = req.app.locals.db;
+
+            let title = req.body.title;
+            //let userId = req.body.userId;
+            //let userId = userId;
+            let category = req.body.category;
+            let price = req.body.price;
+            let description = req.body.description;
+            let createdAt = new Date();
+            let updatedAt = new Date();
+
+            let newFiles = [];
+            for (i = 0; i < req.files.length; i++) {
+                newFiles.push(req.files[i].filename);
+            };
+            console.log("newFiles:", newFiles);
+            //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
+
+            const productsCollection = db.collection('products');
+            productsCollection.insertOne({
+                title: title,
+                //userId: parseInt(userId),
+                userId: userId,
+                category: parseInt(category),
+                price: parseInt(price),
+                description: description,
+                //image: newFile,
+                images: newFiles,
+                viewCount: 0,
+                favoriteUsers: [],
+                createdAt: createdAt,
+                updatedAt: updatedAt
+            }, function (error, result) {
+                if (error) {
+                    let formatted = {
+                        success: false,
+                        message: null,
+                        errors: error,
+                        data: null
+                    };
+                    res.send(formatted);
+                } else {
+                    let formatted = {
+                        success: true,
+                        message: 'Product is created',
+                        errors: null,
+                        data: {
+                            title: title,
+                            userId: userId,
+                            category: category,
+                            price: price,
+                            description: description,
+                            //image: newFile,
+                            images: newFiles,
+                            createdAt: createdAt
+                        }
+                    };
+                    res.send(formatted);
+                }
+            });
+        }
+    });
+});
+    
+    
+
+router.delete('/', checkAuth, function(req, res, next){
     const db = req.app.locals.db;
     const productsCollection = db.collection('products');
     productsCollection.deleteMany({}, function(error, result){
@@ -237,7 +319,9 @@ router.delete('/', function(req, res, next){
 }
 */
 
-router.delete('/:id', function(req, res, next){
+
+/* DELETE in MyListGoods */
+router.delete('/:id', checkAuth, function(req, res, next){
     const db = req.app.locals.db;
     let id = req.params.id;
     console.log('id:', id);
@@ -268,15 +352,39 @@ router.delete('/:id', function(req, res, next){
     });
 });
 
-router.put('/:id', function(req, res, next){
+/* updGoods */
+router.put('/:id', checkAuth, function(req, res, next){
+    console.log("router.put");
     const db = req.app.locals.db;
     let id = req.params.id;
+    // let title = req.body.title;
+    // let category = req.body.category;
+    // let price = req.body.price;
+    // let description = req.body.description;
+
+    //console.log(req.params);
+    console.log(req.body);
+
+
+    //console.log("id:" + id + ' title:' + title + ' category:' + category + ' price:' + price + ' description:' + description);
+
     let title = req.body.title;
+    let userId = req.body.userId;
     let category = req.body.category;
     let price = req.body.price;
     let description = req.body.description;
+    let updatedAt = new Date();
 
-    console.log("id:" + id + ' title:' + title + ' category:' + category + ' price:' + price + ' description:' + description);
+    
+    // let newFiles = [];
+    // for (i = 0; i < req.files.length; i++) {
+    //     newFiles.push(req.files[i].filename);
+    // };
+    // console.log("newFiles:", newFiles);
+    //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
+    console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description);
+    console.log('id' + id);
+
 
     const productsCollection = db.collection('products');
     productsCollection.updateOne({
