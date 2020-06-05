@@ -20,7 +20,9 @@ import GridItem from "../components/Grid/GridItem.js";
 import Card from "../components/Card/Card.js";
 
 import styles from "../assets/jss/material-kit-react/views/componentsSections/carouselStyle.js";
+import { Button } from "@material-ui/core";
 //import { container } from "../assets/jss/material-kit-react.js";
+import qs from 'qs';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -44,15 +46,17 @@ const useStyles = makeStyles(styles);
 export default function ViewGoods() {
     const [products, setProducts] = useState([]);
     const [images, setImages] = useState(['']);
+    const [user, setUser] = useState('');
+    const [favorite, setFavorite] = useState(false);
     const classes = useStyles();
 //    const classesContents = useStylesContens();
 
     function loadContents() {
         console.log('loadContents01');
         const currentRoute = window.location.pathname;
-        var objId = currentRoute.replace("/viewgoods/", "");  // remove "/viewgoods/"
+        let objId = currentRoute.replace("/viewgoods/", "");  // remove "/viewgoods/"
         let url = `${API_URL}/products/${objId}`;
-        console.log("url", url);
+        console.log("url:", url);
 
         axios.get(url).then(response => response.data)
             .then((data) => {
@@ -71,8 +75,73 @@ export default function ViewGoods() {
             });
     }
 
+    function loginCheck(){
+        console.log('logCheckFunc in MyListGoods');
+        var email_token = localStorage.getItem('userInfo');
+        const obj = JSON.parse(email_token);
+        if (obj == null) {
+            return;
+        }
+        var email = obj.email;
+        var token = obj.token;
+        const url = `${API_URL}/login/loginCheck`;
+        axios({
+            method: 'post',
+            url: url,
+            data: qs.stringify({
+                email: email,
+                token: token
+            }),
+            headers: {
+                'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            }
+        })
+            .then(res => {
+                //console.log(JSON.stringify(res));
+                console.log(res.data);
+                console.log("여기");
+                if(res.data.success === true){
+                  console.log("LoginCheck:로긴됨",res.data.data.userId);
+                  setUser(res.data.data.userId);
+                } else {
+                  console.log("logincheck:로긴안됨");
+                }
+                //this.setState({ loginState: res.data.success })
+                
+                //setUser(res.)
+            })
+    }
+
+    function handleFavorite(){
+        
+        console.log('user:',user);
+        if (!user){
+            alert('로그인 하세요');
+            return;    
+        }
+        
+        let url = `${API_URL}/products/favorite/${products._id}`;
+        console.log("url:", url);
+        axios.put(url, {
+            userId: user
+        }).then(res => {
+            if(res.data.success === true){
+                console.log("setFavorite API 결과:",res.data.data);
+                if (res.data.data.includes(user)){
+                    setFavorite(true);
+                } else {
+                    setFavorite(false);
+                }
+                
+              } else {
+                console.log("setFavorite API 실패");
+              }
+        })
+    }
+
     useEffect(() => {
         loadContents();
+        loginCheck();
     }, []);
 
     return (
@@ -132,6 +201,13 @@ export default function ViewGoods() {
                     </Typography> */}
                             </CardContent>
                             {/* </CardActionArea> */}
+                        </Card>
+                        <Card className={classes.root}>
+                            <CardContent>
+                                <Button onClick={handleFavorite} size="small" color="primary">
+                                    {favorite === true ? '찜됨':'찜하기'}
+                                </Button>
+                            </CardContent>
                         </Card>
                     </div>
                 </div>
