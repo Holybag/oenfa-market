@@ -420,4 +420,75 @@ router.put('/:id', checkAuth, function(req, res, next){
     });
 });
 
+router.put('/favorite/:id', function(req, res, next){
+    const db = req.app.locals.db;
+    let objId = req.params.id;
+    let userId = req.body.userId;
+
+    if (!userId) {
+        let formatted = {
+            success: false,
+            message: 'userId is mandatory in body field',
+            errors: null,
+            data: null
+        };
+        res.send(formatted);
+    }
+    console.log("params - id:" + objId + ' userId:' + userId);
+
+    var o_id = new mongo.ObjectId(objId);
+    const productsCollection = db.collection('products');
+    productsCollection.findOne({"_id":o_id}, function (error, result) {
+        if (error) {
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
+        } else {
+            let favoriteUsers = result.favoriteUsers;
+            if (!favoriteUsers.includes(userId)) {
+                favoriteUsers.push(userId);
+                console.log('favoriteUsers added:', favoriteUsers);
+            } else {
+                favoriteUsers = favoriteUsers.filter(function(value, index, arr){
+                    return value != userId;
+                })
+                console.log('favoriteUsers removed:', favoriteUsers);
+            }
+            
+            productsCollection.updateOne({
+                _id: o_id
+            }, {
+                $set: { 
+                    favoriteUsers: favoriteUsers
+                }
+            }, 
+            function(error, result){
+                if (error) {
+                    let formatted = {
+                        success: false,
+                        message: null,
+                        errors: error,
+                        data: null
+                    };
+                    res.send(formatted);
+                } else {
+                    let formatted = {
+                        success: true,
+                        message: 'favoriteUsers is updated',
+                        errors: null,
+                        data: favoriteUsers
+                    };
+                    res.send(formatted);
+                }
+            });
+        }
+    });
+
+    
+});
+
 module.exports = router;
