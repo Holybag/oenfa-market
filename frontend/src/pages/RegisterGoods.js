@@ -64,8 +64,7 @@ export default function RegGoods() {
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
-  const [imageFile, setImageFile] = useState('');
-  const [imageFile2, setImageFile2] = useState('');
+  const [imageFiles, setImageFiles] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
   let history = useHistory();
@@ -94,23 +93,22 @@ export default function RegGoods() {
   }
 
   const handleSummit = (event) => {
-    console.log('title:',title);
-    console.log('category:',category);
-    console.log('price:',price);
-    console.log('description:',description);
+    console.log('title:', title);
+    console.log('category:', category);
+    console.log('price:', price);
+    console.log('description:', description);
     event.preventDefault();
+
     const formData = new FormData();
-    formData.append('imgFile', imageFile);
-    formData.append('imgFile', imageFile2);
+    for (const key of Object.keys(imageFiles)) {
+      formData.append('imgFile', imageFiles[key]);
+    }
     formData.append('title', title);
-    //formData.append('userId', 1);
     formData.append('category', category);
     formData.append('price', price);
     formData.append('description', description);
     const url = `${API_URL}/products`;
     const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
-    //console.log('token from localstorage:', token);
-    //console.log('get the token from localstorage:');
     axios.post(url, formData, {
       headers: {
         'authorization': token,
@@ -121,15 +119,59 @@ export default function RegGoods() {
       .then(res => {
         //console.log(JSON.stringify(res));
         //console.log(res.data);
-        if (res.data.success){
-          history.push('/');
+        if (res.data.success) {
+          history.push('/MyListGoods');
         } else {
           //console.log(res.data.errors);
           //console.log("error message display");
           alert("상품 등록 실패: " + res.data.message);
-        }        
+        }
       })
   }
+
+  const onFileChange = (event) => {
+    console.log("onFileChange");
+    setImageFiles(event.target.files);
+    console.log(event.target.files);
+  }
+
+  const onFileInit = () => {
+    console.log("onFileInit");
+    const previewContainer = document.getElementById("preview-container");
+    if (previewContainer !== null) {
+      console.log(previewContainer);
+      previewContainer.remove();
+    }
+  }
+
+  const renderPreview = () => {
+    onFileInit();
+
+    const initContainer = document.getElementById("preview-container-init");
+    const initview = document.createElement("div");
+    initview.id = "preview-container";
+    initContainer.appendChild(initview);
+
+    const previewContainer = document.getElementById("preview-container");
+
+    for (let i = 0; i < imageFiles.length; i++) {
+      const preview = document.createElement("img");
+      preview.id = `preview_${i}`;
+      preview.className = 'imgClass';
+      preview.style = 'border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 150px;';
+      previewContainer.appendChild(preview);
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        preview.src = reader.result;
+      };
+      reader.readAsDataURL(imageFiles[i]);
+    }
+  }
+
+  useEffect(() => {
+    //console.log("Similar to componentDidMount and componentDidUpdate");
+    renderPreview();
+  });
 
   useEffect(() => {
     loadCategoryList();
@@ -149,36 +191,24 @@ export default function RegGoods() {
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
-              <input 
-                name="imgFile" 
+              <input
+                name="imgFile"
                 type="file"
-                onChange={(event) => setImageFile(event.target.files[0])}
-                accept="image/*" 
-                className={classes.input} 
-                id="icon-button-file" />
+                // onChange={(event) => setImageFile(event.target.files[0])}
+                onChange={onFileChange}
+                accept="image/*"
+                className={classes.input}
+                id="icon-button-file"
+                multiple />
               <label htmlFor="icon-button-file">
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
                 </IconButton>
               </label>
             </Grid>
-
-            {/* second image file process*/}
             <Grid item xs={12}>
-              <input 
-                name="imgFile2" 
-                type="file"
-                onChange={(event) => setImageFile2(event.target.files[0])}
-                accept="image/*" 
-                className={classes.input} 
-                id="icon-button-file2" />
-              <label htmlFor="icon-button-file2">
-                <IconButton color="primary" aria-label="upload picture" component="span">
-                  <PhotoCamera />
-                </IconButton>
-              </label>
+              <div id="preview-container-init" />
             </Grid>
-
             <Grid item xs={12}>
               <TextField
                 autoComplete="fname"
@@ -194,27 +224,27 @@ export default function RegGoods() {
               />
             </Grid>
             <Grid item xs={12}>
-            <FormControl variant="outlined" style={{width: "100%"}}>
-            <InputLabel id="outlined-label-category">
-                카테고리
+              <FormControl variant="outlined" style={{ width: "100%" }}>
+                <InputLabel id="outlined-label-category">
+                  카테고리
               </InputLabel>
-              <Select
-                id='category'
-                labelId='outlined-label-category'
-                label='카테고리'
-                value={category}
-                // onChange={(event) => setCategory(event.target.value)}
-                onChange={categoryListSelected}
-              >
-                <MenuItem value={0} key={0}>None</MenuItem>
-                {categoryList.map((category, index) => (
-                  <MenuItem value={category.code} key={index+1}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-                
-              </Select>
-            </FormControl>
+                <Select
+                  id='category'
+                  labelId='outlined-label-category'
+                  label='카테고리'
+                  value={category}
+                  // onChange={(event) => setCategory(event.target.value)}
+                  onChange={categoryListSelected}
+                >
+                  <MenuItem value={0} key={0}>None</MenuItem>
+                  {categoryList.map((category, index) => (
+                    <MenuItem value={category.code} key={index + 1}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
+
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12}>
               <TextField
