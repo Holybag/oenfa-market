@@ -190,7 +190,7 @@ export default function ListGoods() {
                         {card.viewCount} View
                     </Button>
                       <Button size="small" color="primary">
-                        Edit
+                      {card.favoriteUsers === true ? card.favoriteUsers.length : '0'} Favorite
                     </Button>
                     </CardActions>
                   </Card>
