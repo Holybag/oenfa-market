@@ -9,12 +9,12 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
+//import Link from '@material-ui/core/Link';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { Link as RLink } from 'react-router-dom';
 import Toolbar from '@material-ui/core/Toolbar';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+//import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import qs from 'qs';
 
 //const API_URL = 'http://localhost:5000'
@@ -91,9 +91,9 @@ export default function MyListGoods() {
 
   const [products, setProducts] = useState([]);
   const [images, setImages] = useState([]);
-  const [category, setCategory] = useState([]);
+  //const [category, setCategory] = useState([]);
   //const [value, setValue] = React.useState(0);
-  const [user, setUser] = useState('');
+  //const [user, setUser] = useState('');
   
 
   function loginCheck(){
@@ -123,7 +123,7 @@ export default function MyListGoods() {
             console.log("여기");
             if(res.data.success === true){
               console.log("성공",res.data.data.userId);
-              setUser(res.data.data.userId);
+              //setUser(res.data.data.userId);
             } else {
               console.log("fail");
             }
@@ -163,8 +163,7 @@ export default function MyListGoods() {
         
         if (data.success === true){
           setProducts(data.data);
-          console.log("데이타 왔나 ?");
-          console.log(data.data);
+          //console.log(data.data);
           
           var i =0;
           let productsImages = [];
@@ -183,40 +182,40 @@ export default function MyListGoods() {
       });
   }
 
-  function loadContentsCategory(currCategory) {
-    console.log('loadContentsCategory in MyListGoods');
-    let url = `${API_URL}/products`;
-    // console.log("url:", url);
+  // function loadContentsCategory(currCategory) {
+  //   console.log('loadContentsCategory in MyListGoods');
+  //   let url = `${API_URL}/products`;
+  //   // console.log("url:", url);
 
-    if (currCategory !== undefined && currCategory !== 1004) {  //1004 = All Category
-      url = url + "/category/" + currCategory;
-      console.log("url:", url);
-    }
-    axios.get(url).then(response => response.data)
-      .then((data) => {
-        setProducts(data.data);
-        //data.map(function (product) {
-        //  console.log(product);
-        //  return 1;
-        //});
-      });
-  }
+  //   if (currCategory !== undefined && currCategory !== 1004) {  //1004 = All Category
+  //     url = url + "/category/" + currCategory;
+  //     console.log("url:", url);
+  //   }
+  //   axios.get(url).then(response => response.data)
+  //     .then((data) => {
+  //       setProducts(data.data);
+  //       //data.map(function (product) {
+  //       //  console.log(product);
+  //       //  return 1;
+  //       //});
+  //     });
+  // }
 
   
-  function loadCategory() {
-    // console.log('loadCategory');
-    const url = `${API_URL}/category`;
-    // console.log("category url:", url);
+  // function loadCategory() {
+  //   // console.log('loadCategory');
+  //   const url = `${API_URL}/category`;
+  //   // console.log("category url:", url);
     
-    axios.get(url).then(response => response.data)
-      .then((data) => {
-        setCategory(data.data);
-        // data.map(function (category) {
-        //   console.log(category.name);
-        //   return 1;
-        // });
-      });
-  }
+  //   axios.get(url).then(response => response.data)
+  //     .then((data) => {
+  //       setCategory(data.data);
+  //       // data.map(function (category) {
+  //       //   console.log(category.name);
+  //       //   return 1;
+  //       // });
+  //     });
+  // }
 
   const handleEdit = (productsObjId) => {
       history.push(`/UpdGoods/${productsObjId}`);
@@ -247,7 +246,7 @@ export default function MyListGoods() {
         console.log(res.data);
         if (res.data.success === true){
           console.log("Delete success !");
-          alert("Delete success !");
+          //alert("Delete success !");
           // reload page
           loadContents();
         } else {
@@ -263,7 +262,7 @@ export default function MyListGoods() {
     //props.data();
     loginCheck();
     loadContents();
-    loadCategory();
+    //loadCategory();
   }, []);
   
   return (
@@ -337,6 +336,10 @@ export default function MyListGoods() {
                     onClick={
                       function (event) {
                       event.preventDefault();
+                      let response = window.confirm("등록된 상품을 삭제하시겠습니까?");
+                      if (response === false) {
+                        return;
+                      }
                       handleDelete(card._id);
                   }}>
                         Delete

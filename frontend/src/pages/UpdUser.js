@@ -97,7 +97,8 @@ export default function UpdUser() {
   //const [user, setUser] = useState([]);
   // const classes = useStyles();
 
-  function loadUserInfo() {
+  //function loadUserInfo() {
+  const loadUserInfo = () => {
     console.log('loadUserInfo');
     let url = `${API_URL}/users/view`;
     console.log("url", url);

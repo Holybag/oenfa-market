@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+//import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -21,7 +21,7 @@ import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import PhotoCamera from '@material-ui/icons/PhotoCamera';
 import axios from 'axios';
-import qs from 'qs';
+//import qs from 'qs';
 
 import { MenuItem, InputLabel } from '@material-ui/core';
 //import { Redirect } from 'react-router-dom';
@@ -56,7 +56,14 @@ const useStyles = makeStyles((theme) => ({
   input: {
     // display: 'none',
   },
-
+  // style = {{'border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 130px;'}}
+  img: {
+    border: 1, 
+    solid: "#ddd", 
+    borderRadius: 2,
+    padding: 2,
+    width: 120,
+  },
 }));
 
 
@@ -66,86 +73,64 @@ export default function UpdGoods() {
   const [category, setCategory] = useState('');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
-  const [imageFile, setImageFile] = useState('');
-  const [imageFile2, setImageFile2] = useState('');
+  const [imageFiles, setImageFiles] = useState([]);
+  const [prevImageFiles, setPrevImageFiles] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
 
-  let history = useHistory();
+  //let history = useHistory();
 
-  function loadCategoryList() {
+  //function loadCategoryList() {
+  const loadCategoryList = () => {
     const url = `${API_URL}/category`;
-
     axios.get(url).then(response => response.data)
       .then((data) => {
         setCategoryList(data.data);
-        console.log(data.data);
+        //console.log(data.data);
       })
   }
 
   const categoryListSelected = (event) => {
-    //console.log('event value:', event.target);
     setCategory(event.target.value);
-    // categoryList.map((category) => {
-    //   console.log(category.name);
-    //   if (category.name === event.target.name) {
-    //     setCategory(category.code)
-    //     console.log('category selected:', category.name);
-    //     return;
-    //   }
-    // });
   }
 
   const handleSummit = (event) => {
-    console.log('title:',title);
-    console.log('category:',category);
-    console.log('price:',price);
-    console.log('description:',description);
+    // console.log('title:',title);
+    // console.log('category:',category);
+    // console.log('price:',price);
+    // console.log('description:',description);
     event.preventDefault();
+    
     const formData = new FormData();
-    formData.append('imgFile', imageFile);
-    formData.append('imgFile', imageFile2);
+    for (const key of Object.keys(imageFiles)) {
+      formData.append('imgFile', imageFiles[key]);
+    }
     formData.append('title', title);
-    formData.append('userId', 1);
     formData.append('category', category);
     formData.append('price', price);
     formData.append('description', description);
-    
-    //const url = `${API_URL}/products`;
+    for (const key of Object.keys(prevImageFiles)) {
+      formData.append('prevImageFiles', prevImageFiles[key]);
+      //console.log('prevImageFiles', prevImageFiles[key]);
+    }
     
     const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
     const currentRoute = window.location.pathname;
     var objId = currentRoute.replace("/UpdGoods/", "");  // remove "/viewgoods/"
-    let url = `${API_URL}/products/${objId}`;
-    console.log("url", url);
-    console.log("formData", formData);
-
-
-    //axios.put(url, formData, {
-    axios({
-      method: 'put',
-      url: url,
-      data: qs.stringify({
-        imgFile: [imageFile,imageFile2],
-        title: title,
-        category: category,
-        price: price,
-        description: description
-      }),
+    const url = `${API_URL}/products/${objId}`;
+    //console.log("formData", formData);
+    
+    axios.post(url, formData, {
       headers: {
         'authorization': token,
         'Accept': 'application/json',
-        //'Content-Type': 'application/json'
-        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-      }
-      
+        'Content-Type': 'application/json'
+        //'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+      }      
     })
       .then(res => {
-        //console.log(JSON.stringify(res));
-        //console.log(res.data);
         if (res.data.success){
-
-          //history.push('/');
           alert("상품 수정 성공: " + res.data.message);
+          window.location.reload(false);
         } else {
           //console.log(res.data.errors);
           //console.log("error message display");
@@ -156,15 +141,10 @@ export default function UpdGoods() {
 
   function loadGoodsInfo() {
     console.log('loadGoodsInfo');
-    //let url = `${API_URL}/products/view`;
-    //console.log("url", url);
     const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
-    console.log('token from localstorage:', token);
-
     const currentRoute = window.location.pathname;
     var objId = currentRoute.replace("/UpdGoods/", "");  // remove "/viewgoods/"
     let url = `${API_URL}/products/${objId}`;
-    console.log("url", url);
 
     axios({
       method: 'get',
@@ -176,36 +156,97 @@ export default function UpdGoods() {
       }
     }).then(response => response.data)
       .then((data) => {
-        
-        //let response = data.data;
         if (data.success === true){
           let result = data.data;
-          console.log("결과");
-          console.log(result);
+          //console.log(result);
           setTitle(result.title);
           setCategory(result.category);
           setPrice(result.price);
           setDescription(result.description);
-  
-          setImageFile(result.images[0]);
-          setImageFile2(result.images[1]);
-          console.log(result.images[0]);
-          console.log(result.images[1]);
-  
-          //history.push('/');
+          setPrevImageFiles(result.images);
         } else {
-          console.log("loadGoodsInfo fail");
           alert("load GoodsInfo fail");
-          //history.push('/');
         }
-        
       });
   }
+
+  const onFileChange = (event) => {
+    //console.log("onFileChange");
+    setImageFiles(event.target.files);
+  }
+
+  const onFileInit = () => {
+    //console.log("onFileInit");
+    const previewContainer = document.getElementById("preview-container");
+    if (previewContainer !== null) {
+      previewContainer.remove();
+    }
+  }
+
+  const renderPreview = () => {
+    onFileInit();
+    //console.log("renderPreview");
+    const initContainer = document.getElementById("preview-container-init");
+    const initview = document.createElement("div");
+    initview.id = "preview-container";
+    initContainer.appendChild(initview);
+
+    const previewContainer = document.getElementById("preview-container");
+    for (let i = 0; i < imageFiles.length; i++) {
+      const preview = document.createElement("img");
+      preview.id = `preview_${i}`;
+      preview.className = 'imgClass';
+      preview.style = 'border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 130px;';
+      previewContainer.appendChild(preview);
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        preview.src = reader.result;
+      };
+      reader.readAsDataURL(imageFiles[i]);
+    }
+  }
+
+  useEffect(() => {
+    //console.log("Similar to componentDidMount and componentDidUpdate");
+    renderPreview();
+  });
 
   useEffect(() => {
     loadCategoryList();
     loadGoodsInfo();
   }, []);
+
+  const handleDelete = (event) => {
+    console.log("handleDelete");
+    event.preventDefault();
+    
+    let response = window.confirm("이미지를 삭제하시겠습니까?");
+    if (response === false) {
+      return;
+    }
+    
+    let deleteFile = event.target.alt;
+    const itemToFind = prevImageFiles.find(function(item) {
+      return item === deleteFile
+    }) 
+    const idx = prevImageFiles.indexOf(itemToFind) 
+    if (idx > -1) {
+      prevImageFiles.splice(idx, 1)
+    }
+    //console.log(prevImageFiles);
+    
+    //let vid = event.target.id;
+    // let previewContainer = document.getElementById(vid);
+    // console.log(previewContainer);
+    // previewContainer.remove();
+
+    // button hidden
+    let alt = event.target.alt;
+    let hiddenContainer = document.getElementById(alt);
+    hiddenContainer.setAttribute("style", "display:none");
+
+    setPrevImageFiles(prevImageFiles); 
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -221,30 +262,39 @@ export default function UpdGoods() {
           <Grid container spacing={2}>
 
             <Grid item xs={12}>
+              <div>
+                {prevImageFiles.map((img, index) => (
+                  <Button  size="small" color="primary"
+                  key = {index}
+                  onClick={handleDelete}
+                  id = {prevImageFiles[index]}
+                    >             
+                    <img 
+                      src={API_URL + '/imageFiles/' + prevImageFiles[index] }
+                      className={classes.img}
+                      alt={prevImageFiles[index]}
+                      id = {`image`+index}
+                    />
+                  </Button>
+                ))}
+              </div>
+            </Grid>
+
+            <Grid item xs={12}>
+              <div id="preview-container-init" />
+            </Grid>
+
+            <Grid item xs={12}>
               <input 
                 name="imgFile" 
                 type="file"
-                onChange={(event) => setImageFile(event.target.files[0])}
+                multiple
+                onChange={onFileChange}
+                //onChange={(event) => setImageFile(event.target.files[0])}
                 accept="image/*" 
                 className={classes.input} 
                 id="icon-button-file" />
               <label htmlFor="icon-button-file">
-                <IconButton color="primary" aria-label="upload picture" component="span">
-                  <PhotoCamera />
-                </IconButton>
-              </label>
-            </Grid>
-
-            {/* second image file process*/}
-            <Grid item xs={12}>
-              <input 
-                name="imgFile2" 
-                type="file"
-                  onChange={(event) => setImageFile2(event.target.files[0])}
-                accept="image/*" 
-                className={classes.input} 
-                id="icon-button-file2" />
-              <label htmlFor="icon-button-file2">
                 <IconButton color="primary" aria-label="upload picture" component="span">
                   <PhotoCamera />
                 </IconButton>

@@ -105,7 +105,7 @@ router.get('/:objId', function (req, res, next) {
                 errors: null,
                 data: result
             };
-            console.log("result:",result);
+            //console.log("result:",result);
             res.send(formatted);
         }
     });
@@ -186,6 +186,10 @@ router.get('/mylist/mylist', checkAuth, function (req, res, next) {
 router.post('/', checkAuth, function(req, res, next){
     console.log("POST");
 
+    console.log("req.body", req.body);
+    console.log("req.body.title:", req.body.title);
+    //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
+
     // After check-auth.js (in middleware)
     // get userId from token
     const token = req.headers.authorization.split(" ")[1];
@@ -214,7 +218,12 @@ router.post('/', checkAuth, function(req, res, next){
             // 정상적으로 완료됨
             const db = req.app.locals.db;
 
+            console.log("req.body", req.body);
+            console.log("req.body.title", req.body.title);
+        
+            
             let title = req.body.title;
+            
             //let userId = req.body.userId;
             //let userId = userId;
             let category = req.body.category;
@@ -353,72 +362,98 @@ router.delete('/:id', checkAuth, function(req, res, next){
 });
 
 /* updGoods */
-router.put('/:id', checkAuth, function(req, res, next){
-    console.log("router.put");
-    const db = req.app.locals.db;
-    let id = req.params.id;
-    // let title = req.body.title;
-    // let category = req.body.category;
-    // let price = req.body.price;
-    // let description = req.body.description;
-
-    //console.log(req.params);
-    console.log(req.body);
-
-
-    //console.log("id:" + id + ' title:' + title + ' category:' + category + ' price:' + price + ' description:' + description);
-
-    let title = req.body.title;
-    let userId = req.body.userId;
-    let category = req.body.category;
-    let price = req.body.price;
-    let description = req.body.description;
-    let updatedAt = new Date();
+//router.put('/:id', checkAuth, function(req, res, next){
+router.post('/:id', checkAuth, function(req, res, next){
+//router.post('/update/', function(req, res, next){
+    console.log("router.post-/update/--");
 
     
-    // let newFiles = [];
-    // for (i = 0; i < req.files.length; i++) {
-    //     newFiles.push(req.files[i].filename);
-    // };
-    // console.log("newFiles:", newFiles);
-    //console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description + ' imageFile:' + newFile);
-    console.log('title:' + title + ' userId:' + userId + ' category:' + category + ' price:' + price + ' description:' + description);
-    console.log('id' + id);
-
-
-    const productsCollection = db.collection('products');
-    productsCollection.updateOne({
-        _id: new mongo.ObjectID(id)
-    }, {
-        $set: { 
-            title: title, 
-            category: parseInt(category),
-            price: parseInt(price),
-            description: description
-        }
-    }, 
-    function(error, result){
-        if (error) {
+    upload(req, res, function (err) {
+        if (err) {
+            // 업로드할때 오류가 발생함
+            console.log("업로드 오류");
             let formatted = {
                 success: false,
-                message: null,
-                errors: error,
+                message: err.message,
+                errors: err,
                 data: null
             };
             res.send(formatted);
+            //return
         } else {
-            let formatted = {
-                success: true,
-                message: 'Product is updated',
-                errors: null,
-                data: {
-                    id: id
+            console.log("정상 실행");
+            // 정상적으로 완료됨
+            const db = req.app.locals.db;
+            
+            let id = req.params.id;
+            //console.log("req.params.id",req.params.id);
+            //console.log("req.params",req.params);
+            
+            let title = req.body.title;
+            let userId = req.body.userId;
+            let category = req.body.category;
+            let price = req.body.price;
+            let description = req.body.description;
+            let updatedAt = new Date();
+
+            let prevImageFiles = req.body.prevImageFiles;
+            //console.log("isArray ?: ",Array.isArray(prevImageFiles));
+
+            
+            let newFiles = [];
+            if (Array.isArray(prevImageFiles)){
+                for (let i = 0; i < prevImageFiles.length; i++) {
+                    newFiles.push(prevImageFiles[i]);
                 }
+            } else {
+                console.log("prevImageFiles", prevImageFiles);
+                if (prevImageFiles !== undefined && prevImageFiles !== null ){
+                    console.log("No undefined or null");
+                    newFiles.push(prevImageFiles);
+                }
+            }            
+            for (i = 0; i < req.files.length; i++) {
+                newFiles.push(req.files[i].filename);
             };
-            res.send(formatted);
+
+            const productsCollection = db.collection('products');
+            productsCollection.updateOne({
+                _id: new mongo.ObjectID(id)
+            }, {
+                $set: { 
+                    title: title, 
+                    category: parseInt(category),
+                    price: parseInt(price),
+                    images: newFiles,
+                    description: description
+                }
+            }, 
+            function(error, result){
+                if (error) {
+                    let formatted = {
+                        success: false,
+                        message: null,
+                        errors: error,
+                        data: null
+                    };
+                    res.send(formatted);
+                } else {
+                    let formatted = {
+                        success: true,
+                        message: 'Product is updated',
+                        errors: null,
+                        data: {
+                            id: id
+                        }
+                    };
+                    res.send(formatted);
+                }
+            });
         }
     });
+
 });
+    
 
 router.put('/favorite/:id', function(req, res, next){
     const db = req.app.locals.db;

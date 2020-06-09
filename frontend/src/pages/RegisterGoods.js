@@ -158,7 +158,7 @@ export default function RegGoods() {
       const preview = document.createElement("img");
       preview.id = `preview_${i}`;
       preview.className = 'imgClass';
-      preview.style = 'border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 150px;';
+      preview.style = 'border: 1px solid #ddd; border-radius: 4px; padding: 5px; width: 130px;';
       previewContainer.appendChild(preview);
       const reader = new FileReader();
       reader.onload = function (evt) {
