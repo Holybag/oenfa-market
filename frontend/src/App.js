@@ -6,6 +6,7 @@ import ListGoods from './pages/ListGoods';
 import MyListGoods from './pages/MyListGoods';
 
 import ViewGoods from './pages/ViewGoods';
+import ViewChatting from './pages/ViewChatting';
 import UpdGoods from './pages/UpdGoods';
 import Login from './pages/Login';
 import Logout from './pages/Logout';
@@ -47,7 +48,8 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import AddAPhotoIcon from '@material-ui/icons/AddAPhoto';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import PersonIcon from '@material-ui/icons/Person';
-
+import ChatIcon from '@material-ui/icons/Chat';
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 
 import "./assets/scss/material-kit-react.scss?v=1.8.0";
 
@@ -108,7 +110,6 @@ class App extends Component {
                 <ButtonAppBar currState={this.state.loginState} />
 
                 <Route exact path='/' component={ListGoods} />
-                <Route path='/about' component={About} />
                 <Route path='/listgoods' component={ListGoods} />
                 <Route path='/registergoods' component={RegisterGoods} />
                 {/* <Route path='/mylistgoods'  render={() => <MyListGoods data={this.loginCheck} />} /> */}
@@ -120,7 +121,10 @@ class App extends Component {
                 <Route path='/viewuser' component={ViewUser} />
                 <Route path='/upduser' component={UpdUser} />
                 <Route path='/viewgoods' component={ViewGoods} />
+                <Route path='/viewchatting' component={ViewChatting} />                
                 <Route path='/updgoods' component={UpdGoods} />
+                <Route path='/about' component={About} />
+                
                 <FooterApp />
 
             </BrowserRouter>
@@ -277,6 +281,11 @@ function LogInMenu(props) {
         props.callbackFromParent();
         history.push('/');
     }
+    const handleSummitMsg = (event) => {
+        event.preventDefault();
+        props.callbackFromParent();
+        history.push('/viewchatting');
+    }
     const handleSummitMy = (event) => {
         event.preventDefault();
         props.callbackFromParent();
@@ -309,17 +318,21 @@ function LogInMenu(props) {
                 <ListItemIcon><HomeIcon color="secondary" /></ListItemIcon>
                 <ListItemText primary="홈" />
             </ListItem>
-            <ListItem button key='1' onClick={handleSummitMy}>
-                <ListItemIcon><PersonIcon /></ListItemIcon>
-                <ListItemText primary="나의 정보" />
+            <ListItem button key='5' onClick={handleSummitMsg}>
+                <ListItemIcon><ChatIcon /></ListItemIcon>
+                <ListItemText primary="메시지" />
             </ListItem>
             <ListItem button key='6' onClick={handleSummitProd}>
-                <ListItemIcon><AddAPhotoIcon /></ListItemIcon>
+                <ListItemIcon><AssignmentTurnedInIcon /></ListItemIcon>
                 <ListItemText primary="상품 관리" />
             </ListItem>
             <ListItem button key='2' onClick={handleSummitReg}>
                 <ListItemIcon><AddAPhotoIcon /></ListItemIcon>
                 <ListItemText primary="상품 등록" />
+            </ListItem>
+            <ListItem button key='1' onClick={handleSummitMy}>
+                <ListItemIcon><PersonIcon /></ListItemIcon>
+                <ListItemText primary="나의 정보" />
             </ListItem>
             <ListItem button key='3' onClick={handleSummitSetting}>
                 <ListItemIcon><SettingsIcon /></ListItemIcon>

@@ -55,44 +55,47 @@ export default function ViewUser() {
   
   useEffect(() => {
     console.log("useEffect in ViewUser");
+
+    function loadUserInfo() {
+      console.log('loadUserInfo');
+      const url = `${API_URL}/users/view`;
+      
+      const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+      console.log('token from localstorage:', token);
+      
+      axios({
+        method: 'get',
+        url: url,
+        headers: {
+          'authorization': token,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.data)
+        .then((data) => {
+          // modified date string
+          //data.createdAt = data.createdAt.substr(0,10);
+          console.log(data);
+  
+          // setUser(data.data);
+          // console.log(data);
+          
+          if (data.success === true){
+            setUser(data.data);
+            console.log(data);
+          } else {
+            alert("Login fail");
+            history.push('/');
+          }
+  
+        });
+    }
+
     loadUserInfo();
   }, []);
 
 
-  function loadUserInfo() {
-    console.log('loadUserInfo');
-    const url = `${API_URL}/users/view`;
-    
-    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
-    console.log('token from localstorage:', token);
-    
-    axios({
-      method: 'get',
-      url: url,
-      headers: {
-        'authorization': token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }).then(response => response.data)
-      .then((data) => {
-        // modified date string
-        //data.createdAt = data.createdAt.substr(0,10);
-        console.log(data);
-
-        // setUser(data.data);
-        // console.log(data);
-        
-        if (data.success === true){
-          setUser(data.data);
-          console.log(data);
-        } else {
-          alert("Login fail");
-          history.push('/');
-        }
-
-      });
-  }
+  
 
 
 

@@ -22,27 +22,12 @@ const emailAdmin = config.email.emailAdmin;
 const emailPass = config.email.emailPass; 
 const emailSender = config.email.emailSender; 
 
-console.log("SVC_URL",SVC_URL);
-console.log("emailAdmin",emailAdmin);
-console.log("emailPass",emailPass);
-console.log("emailSender",emailSender);
-
+console.log("Mail Confirm SVC_URL",SVC_URL);
+//console.log("emailAdmin",emailAdmin);
+//console.log("emailPass",emailPass);
+//console.log("emailSender",emailSender);
 
 router.use(bodyParser.urlencoded({ extended: false }));
-
-/////// mongodb //////
-// const url = 'mongodb://localhost:27017';
-// const dbName = 'oenfamarket';
-// var db = null;
-// mongo.MongoClient.connect(url, function(err, client) {
-//     if (err) {
-//         console.log(err);
-//     } else {
-//         console.log('Connected successfully to mongodb');
-//         db = client.db(dbName);
-//     }
-// });
-
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {

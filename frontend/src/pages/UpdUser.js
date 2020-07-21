@@ -96,48 +96,49 @@ export default function UpdUser() {
   
   //const [user, setUser] = useState([]);
   // const classes = useStyles();
-
   //function loadUserInfo() {
-  const loadUserInfo = () => {
-    console.log('loadUserInfo');
-    let url = `${API_URL}/users/view`;
-    console.log("url", url);
-    const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
-    console.log('token from localstorage:', token);
-    
-    axios({
-      method: 'get',
-      url: url,
-      headers: {
-        'authorization': token,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }).then(response => response.data)
-      .then((data) => {
-        
-        //let response = data.data;
-        if (data.success === true){
-          let result = data.data;
-          console.log(result);
-          //setUser(result);
-          setEmail(result.email);
-          setPassword(result.password);
-          setName(result.name);
-          setDescription(result.description);
-          setTel(result.tel);
-          
-          //history.push('/');
-        } else {
-          console.log("UpdUser.js: Login fail");
-          alert("Login fail");
-          history.push('/');
-        }
-        
-      });
-  }
 
   useEffect(() => {
+
+    const loadUserInfo = () => {
+      console.log('loadUserInfo');
+      let url = `${API_URL}/users/view`;
+      console.log("url", url);
+      const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+      console.log('token from localstorage:', token);
+      
+      axios({
+        method: 'get',
+        url: url,
+        headers: {
+          'authorization': token,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      }).then(response => response.data)
+        .then((data) => {
+          
+          //let response = data.data;
+          if (data.success === true){
+            let result = data.data;
+            console.log(result);
+            //setUser(result);
+            setEmail(result.email);
+            setPassword(result.password);
+            setName(result.name);
+            setDescription(result.description);
+            setTel(result.tel);
+            
+            //history.push('/');
+          } else {
+            console.log("UpdUser.js: Login fail");
+            alert("Login fail");
+            history.push('/');
+          }
+          
+        });
+    }
+ 
     loadUserInfo();
   }, []);
 

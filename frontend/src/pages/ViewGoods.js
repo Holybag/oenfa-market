@@ -1,6 +1,7 @@
 import React from "react";
 import axios from 'axios';
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 //import { makeStyles } from '@material-ui/core/styles';
 //import Card from '@material-ui/core/Card';
 //import CardActionArea from '@material-ui/core/CardActionArea';
@@ -24,6 +25,10 @@ import { Button } from "@material-ui/core";
 //import { container } from "../assets/jss/material-kit-react.js";
 import qs from 'qs';
 
+import TextField from '@material-ui/core/TextField';
+import Grid from '@material-ui/core/Grid';
+import store from '../store';
+
 const API_URL = process.env.REACT_APP_API_URL;
 
 const useStyles = makeStyles(styles);
@@ -43,6 +48,7 @@ const useStyles = makeStyles(styles);
 //     },
 // }));
 
+
 export default function ViewGoods() {
     const [products, setProducts] = useState([]);
     const [images, setImages] = useState(['']);
@@ -50,6 +56,12 @@ export default function ViewGoods() {
     const [favorite, setFavorite] = useState(false);
     const classes = useStyles();
 //    const classesContents = useStylesContens();
+
+    //const [name, setName] = useState('');
+    const [tel, setTel] = useState('');
+    const [message, setMessage] = useState('');
+
+    let history = useHistory();
 
     function loadContents() {
         console.log('loadContents01');
@@ -144,6 +156,75 @@ export default function ViewGoods() {
         loginCheck();
     }, []);
 
+
+    const handleMsgSend = (event) => {
+        
+        event.preventDefault();
+        console.log('user:',user);
+        if (!user){
+            alert('메시지 전송은 로그인 후 가능합니다.');
+            history.push('/login');
+            return;    
+        }
+
+        console.log('products:',products);
+        console.log('products:',products._id);
+        console.log('name:',user);
+        console.log('tel:',tel);
+        console.log('message:',message);
+        //event.preventDefault();
+
+        //history.push(`/viewchatting/${chattingRoomId}`);
+        history.push(`/viewchatting`);
+
+        // Save userID in redux store
+        // store.dispatch({ type: 'CREATE_USER', user: user });
+        let roomId = products._id + user;
+        let sellerId = products.userId;
+        console.log('roomId:',roomId);
+        console.log('sellerId:',sellerId);
+        store.dispatch({ type: 'CREATE_USER', user: user, message: message, tel: tel, roomId:roomId , sellerId:sellerId});
+        console.log('스토어에 저장하기');
+        
+        
+        // // 본인 계정에 해당하는 새로운 채팅방을 만든다.
+        // let url = `${API_URL}/chattings`;
+        // console.log("url:", url);
+
+        // const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
+        // console.log('token from localstorage:', token);
+
+        // console.log('roomId :', roomId);
+        // console.log('buyerId :', user);
+        // console.log('sellerId :', sellerId);
+
+        // axios({
+        //     method: 'post',
+        //     url: url,
+        //     data: qs.stringify({
+        //         roomId: roomId,
+        //         buyerId: user,
+        //         sellerId: sellerId,
+        //         message: message
+        //     }),
+        //     headers: {
+        //         'authorization': token,
+        //         'Accept': 'application/json',
+        //         //'Content-Type': 'application/json'
+        //         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+        //     }
+
+        // }).then(res => {
+        //     if (res.data.success === true) {
+        //         console.log("chattings List 추가 결과:", res.data.data);
+                
+        //     } else {
+        //         console.log("chattings List 추가 실패");
+        //     }
+        // })
+
+    }
+
     return (
         <React.Fragment>
             <main>
@@ -207,6 +288,92 @@ export default function ViewGoods() {
                                 <Button onClick={handleFavorite} size="small" color="primary">
                                     {favorite === true ? '찜됨':'찜하기'}
                                 </Button>
+                            </CardContent>
+                        </Card>
+
+                        <Card className={classes.root}>
+                            <CardContent>
+                                <Typography gutterBottom variant="h5" component="h2">
+                                    메시지 작성
+                                </Typography>
+                                <form className={classes.form} noValidate>
+                                    <Grid container spacing={3}>
+                                        <Grid item xs={4}>
+                                            Message
+                                        </Grid>
+                                        <Grid item xs={8}>
+                                            <TextField
+                                                variant="outlined"
+                                                //required
+                                                fullWidth
+                                                id="message"
+                                                name="message"
+                                                //label="message"
+                                                type="message"
+                                                value={message}
+                                                onChange={(event) => setMessage(event.target.value)}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            Name
+                                        </Grid>
+                                        <Grid item xs={8}>
+                                            <TextField
+                                                variant="outlined"
+                                                //required
+                                                fullWidth
+                                                id="Name"
+                                                //label="Name"
+                                                name="Name"
+                                                //autoComplete="lname"
+                                                value={user}
+                                                onChange={(event) => setUser(event.target.value)}
+                                            />
+                                        </Grid>
+                                        <Grid item xs={4}>
+                                            Tel
+                                        </Grid>
+                                        <Grid item xs={8}>
+                                            <TextField
+                                                variant="outlined"
+                                                //required
+                                                fullWidth
+                                                id="Tel"
+                                                //label="Tel"
+                                                name="Tel"
+                                                //autoComplete="Tel"
+                                                value={tel}
+                                                onChange={(event) => setTel(event.target.value)}
+                                            />
+                                        </Grid>
+
+
+                                    <Grid item xs={4} align="center">
+                                    </Grid>
+                                    <Grid item xs={8} align="center">
+                                        <Typography variant="body2" color="textSecondary" component="p">
+                                            이용 약관을 준수를 위하여 메시지 처리 방법에 대한 정보는 데이터 보호 정책에서 확인 할 수 있습니다.
+                                        </Typography>
+                                    </Grid>
+                                    <Grid item xs={4} align="center">
+                                    </Grid>
+                                    <Grid item xs={8}>
+                                        <Button
+                                            type="submit"
+                                            fullWidth
+                                            variant="contained"
+                                            color="primary"
+                                            className={classes.submit}
+                                            onClick={handleMsgSend}
+                                        >
+                                            Send
+                                        </Button>        
+                                    </Grid>
+                                    </Grid>
+                                    
+
+                                </form>
+
                             </CardContent>
                         </Card>
                     </div>
