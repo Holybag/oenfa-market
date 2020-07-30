@@ -80,29 +80,48 @@ var io = require('socket.io').listen(chatApp);
 var redis = require('redis');
 var fs = require('fs');
 
+let store = redis.createClient();
 let pub = redis.createClient();
+// 레디스 리스너 실행
+//let sub = redis.createClient();
+//console.log("sub.connected", sub.connected);
 
 io.on('connection', function (client) {
-
+    
     console.log("io.sockets.on('connection') id:", client.id);
+    let clientRoomId;
+    //console.log("sub.connected", sub.connected);
 
     // 레디스 리스너 실행
     let sub = redis.createClient();
-    let obj = {};
+    //let obj = {};
     sub.on("message", function (channel, message) {
+        console.log("message received on server from publish ");
         console.log("Redis RoomId:" + channel + "  msg: " + message);
-        client.send(message);
+        console.log("client.id: " + client.id);
+        console.log('client.connected :' + client.connected);
+        console.log("clientRoomId: " + clientRoomId);
+        if (channel === clientRoomId && client.id !== null){
+        //if (channel === clientRoomId){
+            console.log("클라이언트에 메시지 전송한다.");
+            client.send(message);
+        }
     });
 
     // 소켓 리스너 실행
     client.on("message", function (msg) {
         console.log("client.on msg:", msg);
+        console.log("client.on: Receive msg");
 
         let roomName = msg.roomName;
 
-        if (msg.type == "chat") {                                                       // 메시지가 오는 경우
+        if (msg.type == "chat") {                                                         // 메시지가 오는 경우
             let createdAt = new Date();
             let updatedAt = new Date();
+            
+            //sub.subscribe(roomName);                                                    // 레디스에 방 아이디 등록
+            //console.log("sub.subscribe in chat ", roomName);
+
             //pub.publish(msg.roomName, msg.message);
             strMessage = '{"sellerId":"' + msg.sellerId + '",' +
                 '"buyerId":"' + msg.buyerId + '",' +
@@ -110,9 +129,9 @@ io.on('connection', function (client) {
                 '"message":"' + msg.message + '",' +
                 '"createdAt":"' + createdAt + '"}';
             //pub.publish(roomName, msg.message);                                         // 레디스에 메시지 전송.
-            pub.publish(roomName, strMessage);                                         // 레디스에 메시지 전송.                            
+            pub.publish(roomName, strMessage);                                            // 레디스에 메시지 전송.                            
             //console.log("msg", strMessage);
-
+            
 
             // chat 메시지를 DB에 저장.
             const chattingsCollection = app.locals.db.collection('chat_msgs');
@@ -135,10 +154,18 @@ io.on('connection', function (client) {
 
 
         } else if (msg.type == "setUsername") {                                         // 사용자 등록요청 메시지
+            
+            console.log("sub.connected", sub.connected);
             sub.subscribe(roomName);                                                    // 레디스에 방 아이디 등록
+            console.log("sub.subscribe: ", roomName);
+            clientRoomId = roomName;
+            //pub.publish("chatting","A new user in connected:" + msg.user); 
+            //store.sadd("onlineUsers",msg.user);
+
             //pub.publish(roomName, "User connected: " + msg.user);                       // 레디스에 "사용자 접속" 메시지 전송.
             //obj = { roomName: roomName, clientID: client.id, userName: msg.user };
-            console.log("유저 등록 과정", roomName, msg);
+            //console.log("유저 등록 과정", roomName, msg);
+            console.log("유저 등록 시작");
 
 
             // chat 방을 DB에 저장.
@@ -151,7 +178,8 @@ io.on('connection', function (client) {
                 if (error) {
                     console.log("채팅방 DB 조회 실패", roomName, msg, error);
                 } else {
-                    console.log("채팅방 DB 조회 성공 결과", results);
+                    //console.log("채팅방 DB 조회 성공", results);
+                    console.log("채팅방 DB 조회 성공");
 
                     //<-- 채팅방이 존재하지 않으면 DB에 채팅방을 생성한다. 
                     if (results === null) {
@@ -180,20 +208,19 @@ io.on('connection', function (client) {
         }
     });
 
+    
     client.on('disconnect', function () {
         console.log('disconnect', client.id);
+        console.log('disconnect and unsubscribe roomName', clientRoomId);
+        console.log('disconnect');
+        console.log('disconnect - client.connected :' + client.connected);
+
+        pub.publish("chatting","User is disconnected :" + client.id);
+        sub.unsubscribe(clientRoomId); 
+        sub.quit();
+        client.id = null;
+        
     });
-
-    // client.on('disconnect', function () {
-    //     console.log('disconnect');
-    //     let roomName = obj.roomName;
-    //     let userName = obj.userName;
-
-    //     sub.quit();
-    //     if (typeof roomName !== 'undefined') {
-    //         pub.publish(roomName, "User is disconnected :" + userName);
-    //     }
-    // });
 
 });
 
