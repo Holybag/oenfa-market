@@ -78,12 +78,79 @@ router.post('/', checkAuth, function (req, res, next) {
     });
 });
 
+/* POST chatting msgs */
+router.post('/msgs', checkAuth, function (req, res, next) {
+    console.log("POST msgs");
+
+    //console.log("req.body", req.body);
+    // After check-auth.js (in middleware)
+    // get userId from token
+    const token = req.headers.authorization.split(" ")[1];
+    const decoded = jwt.decode(token);
+    if (decoded === null) {
+        console.log('decoded is null');
+        res.send({ success: false, message: 'decoded is null', error: null, data: null });
+        return;
+    }
+    let userId = decoded.userId;
+
+    const db = req.app.locals.db;
+
+    console.log("req.body");
+    
+    let roomId = req.body.roomId;
+    let sellerId = req.body.sellerId;
+    let message = req.body.message;
+    let buyerId = userId;
+    let writer = req.body.writer;
+    let createdAt = new Date();
+    let updatedAt = new Date();
+
+
+    const chattingsCollection = db.collection('chat_msgs');
+    chattingsCollection.insertOne({
+        roomId: roomId,
+        sellerId: sellerId,
+        buyerId: buyerId,
+        writer: writer,
+        message: message,
+        createdAt: createdAt,
+        updatedAt: updatedAt
+    }, function (error, result) {
+        if (error) {
+            let formatted = {
+                success: false,
+                message: null,
+                errors: error,
+                data: null
+            };
+            res.send(formatted);
+        } else {
+            let formatted = {
+                success: true,
+                message: 'Chat Message is created',
+                errors: null,
+                data: {
+                    roomId: roomId,
+                    //sellerId: sellerId,
+                    //buyerId: buyerId,
+                    writer: writer,
+                    //message: message,
+                    createdAt: createdAt,
+                    updatedAt: updatedAt
+                }
+            };
+            res.send(formatted);
+        }
+    });
+});
+
 
 /* GET chatting My list in ViewChatting.js */
 router.get('/', checkAuth, function (req, res, next) {
     //const db = req.app.locals.db;
     //var categoryCode = Number(req.params.strCategory);
-    console.log("/chattings");
+    console.log("/chattings in chattings.js");
 
     // 인증이 있는 부분 미들웨어로 변경
     const token = req.headers.authorization.split(" ")[1];
@@ -129,7 +196,7 @@ router.get('/', checkAuth, function (req, res, next) {
 router.get('/msgs/:id', checkAuth, function (req, res, next) {
     //const db = req.app.locals.db;
     //var categoryCode = Number(req.params.strCategory);
-    console.log("/msgs/:id");
+    console.log("/msgs/:id in chatting.js");
     let objId = req.params.id;
     
     // 인증이 있는 부분 미들웨어로 변경

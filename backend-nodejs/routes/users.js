@@ -81,7 +81,8 @@ router.get('/view/', function (req, res, next) {
       //console.log('email:', decoded);
       const db = req.app.locals.db;
       const usersCollection = db.collection('users');
-      usersCollection.findOne({ email: userId }, function (error, results) {
+      //usersCollection.findOne({ email: userId }, function (error, results) {
+      usersCollection.findOne({ repId: userId }, function (error, results) {
         if (error) {
           let data = {
             success: false,
@@ -112,7 +113,7 @@ router.get('/:id', function (req, res, next) {
   //console.log('id:', id);
   const db = req.app.locals.db;
   const usersCollection = db.collection('users');
-  usersCollection.findOne({email: id}, function (error, result) {
+  usersCollection.findOne({repId: id}, function (error, result) {
     if (error || result === null) {
       //console.log(error);
       //console.log(result);
@@ -125,9 +126,71 @@ router.get('/:id', function (req, res, next) {
   });
 });
 
+/* Sign In Google Reg */
+router.post('/google/', function (req, res, next) {
+  const classify = "google";    // google, facebook, email
+  let email = req.body.email;
+  let googleId = req.body.googleId;
+  let name = req.body.name;
+  let familyName = req.body.familyName;
+  let givenName = req.body.givenName;
+  let imgeUrl = req.body.imgeUrl;
 
-/* Sign In */
+  const crypto = require('crypto');
+  const authkey = crypto.randomBytes(20).toString('hex'); // token 생성
+  console.log("authkey", authkey);
+
+  console.log('classify:' + classify + ' email:' + email + ' googleId:' + googleId + ' name:' + name + ' familyName:' + familyName);
+  console.log('givenName:' + givenName + ' imgeUrl:' + imgeUrl);
+
+  if (email === null || email === "" || googleId === "") {
+    console.log("Input required");
+    var data = { "success": false, "message": "Fields are required.!", "errors": null, "data": null };
+    res.send(data);
+  }
+
+  const db = req.app.locals.db;
+  const usersCollection = db.collection('users');
+  usersCollection.insertOne({
+    classify: classify,
+    email: email,
+    googleId: googleId,
+    name: name,
+    familyName: familyName,
+    givenName: givenName,
+    imgeUrl: imgeUrl,
+    authkey: authkey,           // 인증을 위한 임시 인증 키
+    authttl: 300,               // 인증 제한 시간   (개발 필요)      
+    authstatus: 0,              // 0: 인증전, 1: 인증 후
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }, function (error, result) {
+    console.log("error", error);
+    console.log("result",result);
+    if (error) {
+      var data = {
+        "success": false,
+        "message": null,
+        "errors": error,
+        "data": null
+      };
+      res.send(data);
+    } else {
+      var data = {
+        "success": true,
+        "message": null,
+        "errors": null,
+        "data": result
+      };
+      res.send(data);
+    }
+  });
+
+});
+
+/* Sign In Email */
 router.post('/', function (req, res, next) {
+  const classify = 'email';
   let email = req.body.email;
   let password = req.body.password;
   let name = req.body.name;
@@ -150,6 +213,8 @@ router.post('/', function (req, res, next) {
   const db = req.app.locals.db;
   const usersCollection = db.collection('users');
   usersCollection.insertOne({
+    classify: classify,
+    repId: email,
     email: email,
     password: password,
     authkey: authkey,           // 인증을 위한 임시 인증 키

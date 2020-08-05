@@ -68,7 +68,8 @@ export default function SignUp() {
       method: 'get',
       url: url,
       data: qs.stringify({
-        email: email
+        //repId: email
+        //email: email
       }),
       headers: {
         'content-type': 'application/x-www-form-urlencoded;charset=utf-8'

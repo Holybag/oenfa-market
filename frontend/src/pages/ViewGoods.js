@@ -114,6 +114,7 @@ export default function ViewGoods() {
                 console.log("여기");
                 if(res.data.success === true){
                   console.log("LoginCheck:로긴됨",res.data.data.userId);
+                  console.log("LoginCheck:로긴됨",res.data.data);
                   setUser(res.data.data.userId);
                 } else {
                   console.log("logincheck:로긴안됨");
@@ -227,9 +228,9 @@ export default function ViewGoods() {
 
     return (
         <React.Fragment>
-            <main>
-                {/* <div className={classesContents.content} >
-                </div> */}
+            <div>
+                {/* <div className={classesContents.content} ></div> */}
+                {/* </div>  */}
 
                 <div>
                     <div>
@@ -320,6 +321,7 @@ export default function ViewGoods() {
                                         <Grid item xs={8}>
                                             <TextField
                                                 variant="outlined"
+                                                disabled="true"
                                                 //required
                                                 fullWidth
                                                 id="Name"
@@ -378,7 +380,8 @@ export default function ViewGoods() {
                         </Card>
                     </div>
                 </div>
-            </main>
+                </div>
+            {/* </main> */}
         </React.Fragment>
     );
 }

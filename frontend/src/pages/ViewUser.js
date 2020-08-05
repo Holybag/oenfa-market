@@ -52,17 +52,17 @@ export default function ViewUser() {
   const classes = useStyles();
 
   let history = useHistory();
-  
+
   useEffect(() => {
     console.log("useEffect in ViewUser");
 
     function loadUserInfo() {
       console.log('loadUserInfo');
       const url = `${API_URL}/users/view`;
-      
+
       const token = localStorage.getItem('userInfo') ? 'Bearer ' + JSON.parse(localStorage.getItem('userInfo')).token : null;
       console.log('token from localstorage:', token);
-      
+
       axios({
         method: 'get',
         url: url,
@@ -76,18 +76,18 @@ export default function ViewUser() {
           // modified date string
           //data.createdAt = data.createdAt.substr(0,10);
           console.log(data);
-  
+
           // setUser(data.data);
           // console.log(data);
-          
-          if (data.success === true){
+
+          if (data.success === true) {
             setUser(data.data);
             console.log(data);
           } else {
             alert("Login fail");
             history.push('/');
           }
-  
+
         });
     }
 
@@ -95,7 +95,7 @@ export default function ViewUser() {
   }, []);
 
 
-  
+
 
 
 
@@ -118,6 +118,9 @@ export default function ViewUser() {
                 <CardActionArea>
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
+                      계정 분류: {user.classify}
+                    </Typography>
+                    <Typography gutterBottom variant="h5" component="h2">
                       이메일: {user.email}
                     </Typography>
                     <Typography gutterBottom variant="h5" component="h2">
@@ -126,9 +129,9 @@ export default function ViewUser() {
                   </CardContent>
                 </CardActionArea>
               </Card>
-              
+
               <Card className={classes.root}>
-                <CardActionArea>
+                {/* <CardActionArea> */}
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="h2">
                       전화번호: {user.tel}
@@ -139,9 +142,16 @@ export default function ViewUser() {
                     <Typography gutterBottom variant="h5" component="h2">
                       등록일: {user.createdAt}
                     </Typography>
+                    <Typography>
+                      pk: {user.repId}
+                    </Typography>
+                    <Typography>
+                      g(img): {user.imageUrl}
+                    </Typography>
+
 
                   </CardContent>
-                </CardActionArea>
+                {/* </CardActionArea> */}
               </Card>
             </Grid>
           </Grid>

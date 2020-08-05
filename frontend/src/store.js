@@ -7,7 +7,7 @@ export default createStore(function(state, action){
     }
     if(action.type === 'CREATE_USER'){
         //return {...state, user:action.user}
-        return {...state, user:action.user, roomId:action.roomId, sellerId:action.sellerId}
+        return {...state, user:action.user, roomId:action.roomId, sellerId:action.sellerId, message:action.message}
     }
     return state;
 },  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
